@@ -1,4 +1,4 @@
-package des.gac.llorenzo.hadoop_musket;
+package es.udc.gac.hmusket;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
