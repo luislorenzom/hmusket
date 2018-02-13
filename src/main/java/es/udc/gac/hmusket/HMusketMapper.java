@@ -30,6 +30,7 @@ public class HMusketMapper extends Mapper<LongWritable, Text, Text, IntWritable>
 	protected void cleanup(Mapper<LongWritable, Text, Text, IntWritable>.Context context)
 			throws IOException, InterruptedException {
 		super.cleanup(context);
+		// Musket Call?
 		writer.close();
 	}
 }

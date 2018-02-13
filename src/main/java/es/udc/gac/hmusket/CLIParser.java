@@ -57,8 +57,14 @@ public class CLIParser {
 				"Minimum multiplicty for correct k-mers [only applicable when not using multiple k-mer sizes], default=0")
 				.build());
 
-		options.addOption(Option.builder("file").argName("filePath").hasArg().required()
+		options.addOption(Option.builder("fileIn").argName("filePath").hasArg().required()
 				.desc("File where there are the sequences").build());
+		
+		options.addOption(Option.builder("fileOut").argName("filePath").hasArg().required()
+				.desc("File where there want to save the output").build());
+		
+		options.addOption(Option.builder("fileType").argName("a/q").hasArg().required()
+				.desc("File type <a> for FASTA files and <q> for FASTQ files").build());
 		
 		// Check the arguments received and create the "query" to pass it to Musket
 		String arguments = "";
@@ -66,10 +72,26 @@ public class CLIParser {
 			CommandLine line = parser.parse(options, args);
 			if (line != null) {
 
-				if (line.hasOption("file")) {
-					String valueAssociate = line.getOptionValue("file");
+				if (line.hasOption("fileIn")) {
+					String valueAssociate = line.getOptionValue("fileIn");
 					if (valueAssociate != null) {
-						arguments += " -file " + valueAssociate;
+						HMusket.fileIn = valueAssociate;
+					}
+				}
+
+				if (line.hasOption("fileOut")) {
+					String valueAssociate = line.getOptionValue("fileOut");
+					if (valueAssociate != null) {
+						HMusket.fileOut = valueAssociate;
+					}
+				}
+				
+				if (line.hasOption("fileType")) {
+					String valueAssociate = line.getOptionValue("fileType");
+					if (valueAssociate != null && ( valueAssociate.equalsIgnoreCase("q") || valueAssociate.equalsIgnoreCase("a") )) {
+						HMusket.fileType = valueAssociate;
+					} else {
+						throws new FileInputTypeNotFoundException();
 					}
 				}
 				
@@ -158,7 +180,7 @@ public class CLIParser {
 				
 			}
 
-		} catch (ParseException | NumberFormatException e) {
+		} catch (ParseException | NumberFormatException | FileInputTypeNotFoundException e) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("hmusket", "-------------------------------------------------------------------", options, null, true);
 			System.exit(0);

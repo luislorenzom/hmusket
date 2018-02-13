@@ -14,26 +14,24 @@ import es.udc.gac.hadoop.sequence.parser.mapreduce.FastQInputFormat;
 import es.udc.gac.hmusket.exception.FileInputTypeNotFoundException;
 
 public class HMusket {
+	
+	public static String fileIn;
+	public static String fileOut;
+	public static String fileType;
 
 	public static void main(String[] args) throws Exception {
-
-		if (args.length != 3) {
-			System.err.printf("Usage: [generic options] <input> <output> <file input type>\n");
-		}
-
+		
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf, "HMusket");
 		job.setJarByClass(HMusket.class);
 
-		FileInputFormat.addInputPath(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		FileInputFormat.addInputPath(job, new Path(this.fileIn));
+		FileOutputFormat.setOutputPath(job, new Path(this.fileOut));
 
-		if (args[2].equalsIgnoreCase("a")) {
+		if (this.fileType.equalsIgnoreCase("a")) {
 			job.setInputFormatClass(FastAInputFormat.class);
-		} else if (args[2].equalsIgnoreCase("q")) {
+		} else if (this.fileType.equalsIgnoreCase("q")) {
 			job.setInputFormatClass(FastQInputFormat.class);
-		} else {
-			throw new FileInputTypeNotFoundException(args[2] + ": type not found");
 		}
 
 		job.setOutputKeyClass(Text.class);
