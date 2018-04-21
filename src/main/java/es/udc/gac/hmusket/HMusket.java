@@ -25,12 +25,12 @@ public class HMusket {
 		Job job = Job.getInstance(conf, "HMusket");
 		job.setJarByClass(HMusket.class);
 
-		FileInputFormat.addInputPath(job, new Path(this.fileIn));
-		FileOutputFormat.setOutputPath(job, new Path(this.fileOut));
+		FileInputFormat.addInputPath(job, new Path(fileIn));
+		FileOutputFormat.setOutputPath(job, new Path(fileOut));
 
-		if (this.fileType.equalsIgnoreCase("a")) {
+		if (fileType.equalsIgnoreCase("a")) {
 			job.setInputFormatClass(FastAInputFormat.class);
-		} else if (this.fileType.equalsIgnoreCase("q")) {
+		} else if (fileType.equalsIgnoreCase("q")) {
 			job.setInputFormatClass(FastQInputFormat.class);
 		}
 

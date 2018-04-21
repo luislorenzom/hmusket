@@ -8,6 +8,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import es.udc.gac.hmusket.exception.FileInputTypeNotFoundException;
+
 public class CLIParser {
 	
 	public static String parse(String[] args) {
@@ -91,7 +93,7 @@ public class CLIParser {
 					if (valueAssociate != null && ( valueAssociate.equalsIgnoreCase("q") || valueAssociate.equalsIgnoreCase("a") )) {
 						HMusket.fileType = valueAssociate;
 					} else {
-						throws new FileInputTypeNotFoundException();
+						throw new FileInputTypeNotFoundException();
 					}
 				}
 				
