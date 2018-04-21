@@ -8,8 +8,8 @@ public class MusketCaller {
 
 	public native void callMusket(String args);
 
-	public static void main (String[] args) {
-		new MusketCaller().callMusket("Luis");
-	}
+//	public static void main (String[] args) {
+//		new MusketCaller().callMusket("Luis");
+//	}
 
 }

@@ -20,7 +20,7 @@ public class HMusketMapper extends
             throws IOException, InterruptedException {
 
         super.setup(context);
-        this.writer = new PrintWriter(SAVE_FILE_PATH, "UTF-8");
+        this.writer = new PrintWriter(this.SAVE_FILE_PATH, "UTF-8");
     }
 
     @Override
@@ -28,7 +28,7 @@ public class HMusketMapper extends
             throws IOException, InterruptedException {
 
         String line = value.toString();
-        writer.print(line);
+        this.writer.print(line);
     }
 
     @Override
@@ -36,8 +36,14 @@ public class HMusketMapper extends
             Mapper<LongWritable, Text, Text, IntWritable>.Context context)
             throws IOException, InterruptedException {
 
-        super.cleanup(context); // getConfiguration
-        // Musket Call?
-        writer.close();
+        super.cleanup(context);
+        
+        // Retrieve the arguments from the configuration
+        String arguments = context.getConfiguration().get("arguments");
+        
+        // Native call to musket
+        new MusketCaller().callMusket(arguments);
+        
+        this.writer.close();
     }
 }
