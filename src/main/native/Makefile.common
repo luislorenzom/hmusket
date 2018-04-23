@@ -1,0 +1,22 @@
+CC = gcc
+CXX = g++
+JAVAC = javac
+MKDIR = mkdir
+RMR = rm -rf
+CP = cp
+MAKE = make
+BUILD_DIR = build
+
+# MUSKET
+MUSKET_DIR = /home/llorenzo/Documentos/master/musket-1.1
+MUSKET_LIBS = -lm -lz -lpthread -lgomp
+
+# JAVA_HOME
+ifndef JAVA_HOME
+$(error JAVA_HOME must be set)
+endif
+
+JAVA_HOME_INCLUDES = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
+CFLAGS = -O3 -Wall -c -fPIC $(JAVA_HOME_INCLUDES)
+LIBMUSKET_FLAGS = -shared
+LIBMUSKET_LIBS = $(MUSKET_LIBS)
