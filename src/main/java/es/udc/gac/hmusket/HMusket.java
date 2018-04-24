@@ -20,19 +20,23 @@ public class HMusket {
 
 	public static void main(String[] args) throws Exception {
 		
-	    // Instances a configuration and also creates a job
+	    // Instances a configuration
 		Configuration conf = new Configuration();
-		Job job = Job.getInstance(conf, "HMusket");
-		job.setJarByClass(HMusket.class);
-		
+
 		// Parses arguments. Establishes some global variables
 		// and creates the string arguments to send it to musket
 		String arguments = CLIParser.parse(args);
 		conf.set("arguments", arguments);
+		conf.set("localSequenceDataset", fileIn+"_local");
+		
+		// Creates a job
+		Job job = Job.getInstance(conf, "HMusket");
+		job.setJarByClass(HMusket.class);
+		
 		
 		// Sets input and output path
 		FileInputFormat.addInputPath(job, new Path(fileIn));
-		FileOutputFormat.setOutputPath(job, new Path(fileOut));
+		FileOutputFormat.setOutputPath(job, new Path(fileOut+"_hadoop"));
 		
 		// Establishes what kind of input format is required
 		if (fileType.equalsIgnoreCase("a")) {

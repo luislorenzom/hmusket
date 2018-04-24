@@ -78,6 +78,7 @@ public class CLIParser {
 					String valueAssociate = line.getOptionValue("fileIn");
 					if (valueAssociate != null) {
 						HMusket.fileIn = valueAssociate;
+						arguments += "file " + valueAssociate+"_local"; 
 					}
 				}
 
@@ -85,6 +86,7 @@ public class CLIParser {
 					String valueAssociate = line.getOptionValue("fileOut");
 					if (valueAssociate != null) {
 						HMusket.fileOut = valueAssociate;
+						arguments += " -o " + valueAssociate;
 					}
 				}
 				
@@ -102,7 +104,8 @@ public class CLIParser {
 					Integer.parseInt(valueAssociate);
 					arguments += " -k " + valueAssociate;
 				}
-
+				
+				// TODO: delete it
 				if (line.hasOption("o")) {
 					String valueAssociate = line.getOptionValue("o");
 					if (valueAssociate != null) {
