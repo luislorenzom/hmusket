@@ -10,6 +10,7 @@ K-mer spectrum corrector based on Hadoop
 * Hadoop 2.8.0 or above
 * g++ (development version: 6.3.0)
 * GNU Make (development version: 4.1)
+* Upgrade Commons-cli version (1.2 --> 1.4) in hadoop/share/hadoop/common (TODO: improve this)
 
 ## Authors
 
