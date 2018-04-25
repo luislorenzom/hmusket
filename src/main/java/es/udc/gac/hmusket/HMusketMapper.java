@@ -36,6 +36,8 @@ public class HMusketMapper extends
             throws IOException, InterruptedException {
 
         super.cleanup(context);
+
+        this.writer.close();
         
         // Retrieve the arguments from the configuration
         String arguments = context.getConfiguration().get("arguments");
@@ -43,6 +45,5 @@ public class HMusketMapper extends
         // Native call to musket
         new MusketCaller().callMusket(arguments);
         
-        this.writer.close();
     }
 }
