@@ -78,7 +78,7 @@ public class CLIParser {
 					String valueAssociate = line.getOptionValue("fileIn");
 					if (valueAssociate != null) {
 						HMusket.fileIn = valueAssociate;
-						arguments += "file " + valueAssociate+"_local"; 
+						arguments += valueAssociate+"_local"; 
 					}
 				}
 
