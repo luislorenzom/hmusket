@@ -11,7 +11,7 @@ import org.apache.commons.cli.ParseException;
 import es.udc.gac.hmusket.exception.FileInputTypeNotFoundException;
 
 public class CLIParser {
-	
+
 	public static String parse(String[] args) {
 
 		// Create the command line parser
@@ -55,21 +55,25 @@ public class CLIParser {
 		options.addOption(Option.builder("maxiter").argName("int").hasArg()
 				.desc("Maximal number of correcting iterations per k-mer size, default=2").build());
 
-		options.addOption(Option.builder("minmulti").argName("int").hasArg().desc(
-				"Minimum multiplicty for correct k-mers [only applicable when not using multiple k-mer sizes], default=0")
+		options.addOption(Option.builder("minmulti").argName("int").hasArg()
+				.desc("Minimum multiplicty for correct k-mers [only applicable when not using multiple k-mer sizes], default=0")
 				.build());
 
-		options.addOption(Option.builder("fileIn").argName("filePath").hasArg().required()
+		options.addOption(Option.builder("fileIn").argName("filePath").hasArg().required().numberOfArgs(2)
 				.desc("File where there are the sequences").build());
-		
+
 		options.addOption(Option.builder("fileOut").argName("filePath").hasArg().required()
 				.desc("File where there want to save the output").build());
-		
+
 		options.addOption(Option.builder("fileType").argName("a/q").hasArg().required()
 				.desc("File type <a> for FASTA files and <q> for FASTQ files").build());
-		
-		// Check the arguments received and create the "query" to pass it to Musket
+
+		options.addOption(Option.builder("pairEnd").desc("If the input files are in pair end format").build());
+
+		// Check the arguments received and create the "query" to pass it to
+		// Musket
 		String arguments = "";
+
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line != null) {
@@ -77,8 +81,8 @@ public class CLIParser {
 				if (line.hasOption("fileIn")) {
 					String valueAssociate = line.getOptionValue("fileIn");
 					if (valueAssociate != null) {
-						HMusket.fileIn = valueAssociate;
-						arguments += valueAssociate+"_local"; 
+						HMusket.fileIn.add(valueAssociate);
+						arguments += valueAssociate + "_local";
 					}
 				}
 
@@ -89,28 +93,25 @@ public class CLIParser {
 						arguments += " -o " + valueAssociate;
 					}
 				}
-				
+
 				if (line.hasOption("fileType")) {
 					String valueAssociate = line.getOptionValue("fileType");
-					if (valueAssociate != null && ( valueAssociate.equalsIgnoreCase("q") || valueAssociate.equalsIgnoreCase("a") )) {
+					if (valueAssociate != null
+							&& (valueAssociate.equalsIgnoreCase("q") || valueAssociate.equalsIgnoreCase("a"))) {
 						HMusket.fileType = valueAssociate;
 					} else {
 						throw new FileInputTypeNotFoundException();
 					}
 				}
-				
+
+				if (line.hasOption("pairEnd")) {
+					HMusket.pairEnd = Boolean.TRUE;
+				}
+
 				if (line.hasOption("k")) {
 					String valueAssociate = line.getOptionValue("k");
 					Integer.parseInt(valueAssociate);
 					arguments += " -k " + valueAssociate;
-				}
-				
-				// TODO: delete it
-				if (line.hasOption("o")) {
-					String valueAssociate = line.getOptionValue("o");
-					if (valueAssociate != null) {
-						arguments += " -o " + valueAssociate;
-					}
 				}
 
 				if (line.hasOption("omulti")) {
@@ -182,12 +183,13 @@ public class CLIParser {
 					Integer.parseInt(valueAssociate);
 					arguments += " -minmulti " + valueAssociate;
 				}
-				
+
 			}
 
 		} catch (ParseException | NumberFormatException | FileInputTypeNotFoundException e) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("hmusket", "-------------------------------------------------------------------", options, null, true);
+			formatter.printHelp("hmusket", "-------------------------------------------------------------------",
+					options, null, true);
 			System.exit(0);
 		}
 		return arguments;
