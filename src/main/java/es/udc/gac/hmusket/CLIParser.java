@@ -1,5 +1,7 @@
 package es.udc.gac.hmusket;
 
+import java.util.Arrays;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -9,6 +11,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import es.udc.gac.hmusket.exception.FileInputTypeNotFoundException;
+import es.udc.gac.hmusket.exception.PairEndWithoutTwoDatasetsException;
 
 public class CLIParser {
 
@@ -24,11 +27,6 @@ public class CLIParser {
 				.desc("Specify two paramters: k-mer size and estimated total number of k-mers for this k-mer size)")
 				.build());
 
-		options.addOption(Option.builder("o").argName("str").hasArg().desc("The single output file name").build());
-
-		options.addOption(Option.builder("omulti").argName("str").hasArg()
-				.desc("Prefix of output file names, one input corresponding one output").build());
-
 		options.addOption(
 				Option.builder("p").argName("int").hasArg().desc("Number of threads [>=2], default=2").build());
 
@@ -37,9 +35,6 @@ public class CLIParser {
 
 		options.addOption(Option.builder("maxtrim").argName("int").hasArg()
 				.desc("Maximal number of bases that can be trimmed, default=0").build());
-
-		options.addOption(
-				Option.builder("inorder").desc("Keep sequences outputed in the same order with the input").build());
 
 		options.addOption(Option.builder("lowercase").desc("Write corrected bases in lowercase, default=0").build());
 
@@ -59,11 +54,11 @@ public class CLIParser {
 				.desc("Minimum multiplicty for correct k-mers [only applicable when not using multiple k-mer sizes], default=0")
 				.build());
 
-		options.addOption(Option.builder("fileIn").argName("filePath").hasArg().required().numberOfArgs(2)
-				.desc("File where there are the sequences").build());
+		options.addOption(Option.builder("fileIn").argName("filePath").hasArg().required().numberOfArgs(Option.UNLIMITED_VALUES)
+				.desc("Dataset's path").build());
 
 		options.addOption(Option.builder("fileOut").argName("filePath").hasArg().required()
-				.desc("File where there want to save the output").build());
+				.desc("The single output file name").build());
 
 		options.addOption(Option.builder("fileType").argName("a/q").hasArg().required()
 				.desc("File type <a> for FASTA files and <q> for FASTQ files").build());
@@ -79,10 +74,10 @@ public class CLIParser {
 			if (line != null) {
 
 				if (line.hasOption("fileIn")) {
-					String valueAssociate = line.getOptionValue("fileIn");
+					String[] valueAssociate = line.getOptionValues("fileIn");
 					if (valueAssociate != null) {
-						HMusket.fileIn.add(valueAssociate);
-						arguments += valueAssociate + "_local";
+						HMusket.fileIn = Arrays.asList(valueAssociate);
+						arguments += valueAssociate[0] + "_local";
 					}
 				}
 
@@ -100,25 +95,26 @@ public class CLIParser {
 							&& (valueAssociate.equalsIgnoreCase("q") || valueAssociate.equalsIgnoreCase("a"))) {
 						HMusket.fileType = valueAssociate;
 					} else {
-						throw new FileInputTypeNotFoundException();
+						throw new FileInputTypeNotFoundException(line.getOptionValue("fileType"));
 					}
 				}
 
 				if (line.hasOption("pairEnd")) {
 					HMusket.pairEnd = Boolean.TRUE;
+					
+					String[] fileInValues = line.getOptionValues("fileIn");
+					
+					if (fileInValues.length != 2) {
+						throw new PairEndWithoutTwoDatasetsException();
+					}
+					
+					arguments = "-omulti " + line.getOptionValue("fileOut") + " -inorder " + fileInValues[0] + " " + fileInValues[1];
 				}
 
 				if (line.hasOption("k")) {
 					String valueAssociate = line.getOptionValue("k");
 					Integer.parseInt(valueAssociate);
 					arguments += " -k " + valueAssociate;
-				}
-
-				if (line.hasOption("omulti")) {
-					String valueAssociate = line.getOptionValue("omulti");
-					if (valueAssociate != null) {
-						arguments += " -omulti " + valueAssociate;
-					}
 				}
 
 				if (line.hasOption("p")) {
@@ -137,13 +133,6 @@ public class CLIParser {
 					String valueAssociate = line.getOptionValue("maxtrim");
 					Integer.parseInt(valueAssociate);
 					arguments += " -maxtrim " + valueAssociate;
-				}
-
-				if (line.hasOption("inorder")) {
-					String valueAssociate = line.getOptionValue("inorder");
-					if (valueAssociate != null) {
-						arguments += " -inorder " + valueAssociate;
-					}
 				}
 
 				if (line.hasOption("lowercase")) {
@@ -185,13 +174,21 @@ public class CLIParser {
 				}
 
 			}
-
-		} catch (ParseException | NumberFormatException | FileInputTypeNotFoundException e) {
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("hmusket", "-------------------------------------------------------------------",
-					options, null, true);
-			System.exit(0);
+			
+		} catch (ParseException | NumberFormatException e) {
+			CLIParser.showHelp(options);
+		} catch (FileInputTypeNotFoundException|PairEndWithoutTwoDatasetsException e) {
+			// Custom error message
+			System.err.println(e.getMessage());
+			CLIParser.showHelp(options);
 		}
 		return arguments;
+	}
+	
+	private static void showHelp(Options options) {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp("hmusket", "-------------------------------------------------------------------",
+				options, null, true);
+		System.exit(0);		
 	}
 }

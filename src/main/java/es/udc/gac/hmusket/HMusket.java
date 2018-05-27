@@ -36,6 +36,11 @@ public class HMusket {
 		conf.set("arguments", arguments);
 		conf.set("localSequenceDataset", fileIn.get(0) + "_local");
 
+		if (pairEnd) {
+			// Adds the second input file in the job configuration
+			conf.set("localSequenceDataset_right", fileIn.get(1) + "_local");
+		}
+
 		// Creates a job
 		Job job = Job.getInstance(conf, "HMusket");
 		job.setJarByClass(HMusket.class);
@@ -59,13 +64,10 @@ public class HMusket {
 			PairedEndSequenceInputFormat.setLeftInputPath(job, new Path(fileIn.get(0)), inputFormatClass);
 			PairedEndSequenceInputFormat.setRightInputPath(job, new Path(fileIn.get(1)), inputFormatClass);
 
-			// Adds the second input file in the job configuration
-			conf.set("localSequenceDataset_right", fileIn.get(1) + "_local");
-
 			// Sets Mapper
 			job.setMapperClass(HMusketPairEndMapper.class);
 		} else {
-			// Single End
+			// Sets input format class for single end dataset
 			job.setInputFormatClass(inputFormatClass);
 
 			// Sets input path
