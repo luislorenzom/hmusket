@@ -23,3 +23,9 @@ hs_err_pid*
 
 # Target
 /target/
+
+# LaTeX file
+*.aux
+*.log
+*.pdf
+*.synctex.gz
