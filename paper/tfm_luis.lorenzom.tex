@@ -63,9 +63,27 @@ Debido a la problemática indicando en el párrafo superior junto con la gran de
 
 En el propósito de este trabajo es de proveer a los científicos una herramienta de memoria distribuida que pueda reducir el tiempo de corrección de las secuencias, además de esto, en este trabajo se realiza una análisis de las herramientas que hay disponibles en el mercado (tanto de memoria compartida como distribuida) una introducción y explicación de las tecnologías utilizadas a lo largo del proyecto, para posteriormente detallar el diseño y la implementación del software aquí expuesto, y finalizando con una serie de resultados donde se muestran una comparativa de tiempos y unas conclusiones
 
-\section{Ease of Use}
+\section{Trabajos relacionados}
 
-\subsection{Maintaining the Integrity of the Specifications}
+A lo largo de esta sección se presentarán las diferentes soluciones que hay actualmente en el mercado para la tarea de corregir las secuencias además de indicar tanto sus bondades y sus defectos.
+
+\subsection{Memoria compartida}
+
+Dentro del grupo de soluciones de memoria compartida cabe destacar las soluciones basada en GPU como son CUDE-EC y DecGPU las cuales utilizan un algoritmo basado en efectuar lecturas cortas del genoma lo que no provee una solución completa de errores ni una alta precisión en los resultados, no obstante al estar desarrolladas para GPUs presentan una índice de escalabilidad alto.\\
+
+Otra solución que utiliza un algoritmo basado en lecturas cortas del genoma usando en este caso CPU en lugar de GPU es SOAP corrector. Posteriores versiones del algoritmo utilizan para determinadas operaciones un método basado en el grafo De Brujin, lo cual reduce drásticamente el uso de memoria en casos casos donde la longitud del genoma pueda presentar problemas.\\
+
+Siguiendo con las soluciones que utilizan o están basadas en modelos de grafos, se encuentra Reptile, este software hace uso de un grafo Hamming para resolver las posibles ambigüedades que se encuentren en el genoma o región genómica a corregir, muy útil en casos que presenten errores de translocación.\\
+
+Sin ser un software basado en un modelo de grafos, SGA consigue optimizar el uso de la memoria utilizando la tranformada de Burrows-Wheeler y el FM-Index para representar el espectro k-mer de la región genómica.\\
+
+Además de los métodos de lecturas cortas y métodos basados en grafos hay alternativas basadas en modelos probabilísticos como por ejemplo: Quake, este corrector utiliza la probabilidad acumulada de los k-mer que conforman el genoma para poder clasificar si se trata de un error o no.\\
+
+También existen soluciones que combinan dos posibles como por ejemplo: Hammer que se compone de una solución basada en un grafo Hamming y un modelo probabilístico de la probabilidad acumulada de los k-mer, al igual que hace Quake.\\
+
+Por último indicar correctores que hacen uso de arrays de sufijos como son HiTEC, el cual instancia el genoma con distintos k-mers para posteriormente crear esos arrays y analizar los errores, o SHREC que utiliza un método parecido por HiTEC pero para la detección de indels y sustituciones.\\
+
+\subsection{Memoria distribuida}
 
 The IEEEtran class file is used to format your paper and style the text. All margins, 
 column widths, line spaces, and text fonts are prescribed; please do not 
@@ -74,6 +92,10 @@ measures proportionately more than is customary. This measurement
 and others are deliberate, using specifications that anticipate your paper 
 as one part of the entire proceedings, and not as an independent document. 
 Please do not revise any of the current designations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% TODO %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Prepare Your Paper Before Styling}
 Before you begin to format your paper, first write and save the content as a 
