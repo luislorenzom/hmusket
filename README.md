@@ -30,36 +30,43 @@ K-mer spectrum corrector based on Hadoop
 * Finally compile with Maven hmusket **mvn clean package**
 
 ## How to run hmusket?
-### flags cheat sheet
-usage: hmusket -fileIn <filePath> -fileOut <filePath> -fileType <a/q>
+### Flags cheat sheet
+**usage:** hmusket -fileIn <filePath> -fileOut <filePath> -fileType <a/q>
        [-inorder] [-k <int/unit>] [-lowercase] [-maxbuff <int>] [-maxerr
        <int>] [-maxiter <int>] [-maxtrim <int>] [-minmulti <int>] [-multik
        <bool>] [-o <str>] [-omulti <str>] [-p <int>] [-zlib <int>]
+
 -------------------------------------------------------------------
- -fileIn <filePath>    File where there are the sequences
- -fileOut <filePath>   File where there want to save the output
- -fileType <a/q>       File type <a> for FASTA files and <q> for FASTQ
-                       files
- -k <int/unit>         Specify two paramters: k-mer size and estimated
-                       total number of k-mers for this k-mer size)
- -lowercase            Write corrected bases in lowercase, default=0
- -maxbuff <int>        Capacity of message buffer for each worker,
-                       default=1024
- -maxerr <int>         Maximal number of mutations in any region of length
-                       #k, default=4
- -maxiter <int>        Maximal number of correcting iterations per k-mer
-                       size, default=2
- -maxtrim <int>        Maximal number of bases that can be trimmed,
-                       default=0
- -minmulti <int>       Minimum multiplicty for correct k-mers [only
-                       applicable when not using multiple k-mer sizes],
-                       default=0
- -multik <bool>        Enable the use of multiple k-mer sizes, default=0
- -o <str>              The single output file name
- -omulti <str>         Prefix of output file names, one input
-                       corresponding one output
- -p <int>              Number of threads [>=2], default=2
- -zlib <int>           Zlib-compressed output, default=0
+
+**-fileIn** \<filePath\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File where there are the sequences
+	
+**-fileOut** \<filePath\> &nbsp;&nbsp;&nbsp;&nbsp; File where there want to save the output
+	
+**-fileType** \<a/q\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File type <a> for FASTA files and <q> for FASTQ files
+
+**-k** <int/unit> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Specify two paramters: k-mer size and estimated total number of k-mers for this k-mer size)
+
+**-lowercase** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Write corrected bases in lowercase, default=0
+
+**-maxbuff** \<int\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Capacity of message buffer for each worker, default=1024
+
+**-maxerr** \<int\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Maximal number of mutations in any region of length#k, default=4
+
+**-maxiter** \<int\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Maximal number of correcting iterations per k-mer size, default=2
+
+**-maxtrim** \<int\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Maximal number of bases that can be trimmed, default=0
+
+**-minmulti** \<int\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Minimum multiplicty for correct k-mers [only applicable when not using multiple k-mer sizes],default=0
+
+**-multik** \<bool\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enable the use of multiple k-mer sizes, default=0
+
+**-o** \<str\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The single output file name
+
+**-omulti** \<str\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Prefix of output file names, one input corresponding one output
+
+**-p** \<int\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Number of threads [>=2], default=2
+
+**-zlib** \<int\> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zlib-compressed output, default=0
 
 ### Some runs examples
 
