@@ -12,7 +12,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{HMusket: k-mer spectrum corrector based on Hadoop}
+\title{HMusket: corrector de secuencias mediante el espectro k-mer basado en Hadoop}
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Luis Lorenzo Mosquera}
 \IEEEauthorblockA{\textit{Dpto. de ingeniería de computadores} \\
@@ -42,12 +42,26 @@ or Math in Paper Title or Abstract.
 \end{abstract}
 
 \begin{IEEEkeywords}
-BioInformatics, Big Data, Map-Reduce, k-mer, sequence corrector
+Big Data, Hadoop, Map-Reduce, k-mer, sequence corrector
 \end{IEEEkeywords}
 
-\section{Introduction}
-This document is a model and instructions for \LaTeX.
-Please observe the conference page limits. 
+\section{Introducción}
+Debido a la aparición de la tecnologías conocidas como \textit{Next Generation Sequence} (NGS) se han obtenido grandes volúmenes de datos genéticos procedentes de diversos seres vivos (humanos, animales, plantas, etc). Estos vastos conjuntos de datos se utilizan principalmente para el estudio de los seres vivos secuenciados. 
+No obstante con el abaratamiento de estas tecnologías acercan a los científicos hacia nuevos objetivos y metas donde tienen cabida todos estos datos.
+\\
+
+Además del ya citado estudio de los seres vivos, otros grandes objetivos o campos de estudios en el área de las ciencias de la vida (biología, medicina, etc.) es la predicción de enfermedades, de carácter o predisposición genética, en un estadío temprano para evitar futuras complicaciones en el paciente. \\
+La evasión del fraude en productos alimenticios, tanto para detectar la procedencia u origen del producto en cuestión es otro de las grandes áreas de estudio principalmente por el tema comercial.\\
+Por último, la interacción de la información contenida en los datos obtenidos durante la fase de secuenciación junto con una base de conocimiento tanto de las áreas de la farmacología y patología da como resultado la farmacogenética, pudiendo predecir qué fármaco es más efectivo, ideal o quizás poder diseñar un fármaco para un individuo.
+\\
+
+No obstante para llegar a tales fines y obtener unos resultados adecuados son necesarios una serie de pasos previos. Además de obtener una muestra de ADN y secuenciarla es necesario corregir ese conglomerado de datos, ya que durante la fase de amplificación/síntesis de nuevas copias por PCR es posible que se incorporen errores debido a fallos de ADN polimerasa.\\ Afortunadamente esta clase de fallos siguen un proceso estocástico y pueden ser corregidas por medio de diversos algoritmos.
+\\
+
+Debido a la problemática indicando en el párrafo superior junto con la gran demanda de datos genéticos que se están sucediendo las soluciones tradicionales para corregir los errores generados durante la fase de amplificación producen un cuello de botella a la hora de emplear esos datos ya que la mayoría de estas soluciones son secuenciales o de memoria compartida no logran reducir considerablemente los tiempos de pre-procesado de los datos.
+\\
+
+En el propósito de este trabajo es de proveer a los científicos una herramienta de memoria distribuida que pueda reducir el tiempo de corrección de las secuencias, además de esto, en este trabajo se realiza una análisis de las herramientas que hay disponibles en el mercado (tanto de memoria compartida como distribuida) una introducción y explicación de las tecnologías utilizadas a lo largo del proyecto, para posteriormente detallar el diseño y la implementación del software aquí expuesto, y finalizando con una serie de resultados donde se muestran una comparativa de tiempos y unas conclusiones
 
 \section{Ease of Use}
 
