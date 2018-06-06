@@ -40,5 +40,7 @@ public class HMusketSingleEndMapper extends Mapper<LongWritable, Text, Text, Int
 
 		// Native call to musket
 		new MusketCaller().callMusket(arguments);
+		
+		// TODO delete file
 	}
 }
