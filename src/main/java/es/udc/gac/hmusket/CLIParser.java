@@ -98,8 +98,7 @@ public class CLIParser {
 				    if (valueAssociate != null) {
 				        String localCopyPath = CLIParser.getLocalCopyPath(valueAssociate);
 				        HMusket.localCopyPath = localCopyPath;
-				        // ADD MUSKET parameter
-				        arguments +=  localCopyPath;
+				        arguments +=  "musket " + localCopyPath;
 				    }
 				}
 				
@@ -206,7 +205,7 @@ public class CLIParser {
 	}
 	
    private static String getLocalCopyPath(String folder) {
-       // TODO add application name to file name
+       
        String localPath = folder;
        
        // Checks the last char of localCopyPath
@@ -215,7 +214,7 @@ public class CLIParser {
        }
         
        // Creates file's name
-       String fileName = String.valueOf((System.currentTimeMillis()));
+       String fileName = HMusket.applicationName + "_" + String.valueOf((System.currentTimeMillis()));
         
        if (HMusket.fileType.equalsIgnoreCase("a")) {
            fileName += fileName + ".fasta";

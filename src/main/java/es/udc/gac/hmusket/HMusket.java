@@ -18,7 +18,8 @@ import es.udc.gac.hadoop.sequence.parser.mapreduce.PairedEndSequenceInputFormat;
 import es.udc.gac.hadoop.sequence.parser.mapreduce.SingleEndSequenceInputFormat;
 
 public class HMusket {
-
+    
+    public static final String applicationName = "HMusket";
 	public static List<String> fileIn = new ArrayList<>();
 	public static String fileOut;
 	public static String fileType;
@@ -43,7 +44,7 @@ public class HMusket {
 		}
 
 		// Creates a job
-		Job job = Job.getInstance(conf, "HMusket");
+		Job job = Job.getInstance(conf, HMusket.applicationName);
 		job.setJarByClass(HMusket.class);
 
 		// Sets output path

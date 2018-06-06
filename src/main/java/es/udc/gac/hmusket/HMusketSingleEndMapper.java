@@ -1,5 +1,6 @@
 package es.udc.gac.hmusket;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -41,6 +42,7 @@ public class HMusketSingleEndMapper extends Mapper<LongWritable, Text, Text, Int
 		// Native call to musket
 		new MusketCaller().callMusket(arguments);
 		
-		// TODO delete file
+		// Delete file
+		new File(context.getConfiguration().get("localSequenceDataset"), "UTF-8").delete();		
 	}
 }
