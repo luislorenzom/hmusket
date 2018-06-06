@@ -11,43 +11,40 @@ JNIEXPORT void JNICALL Java_es_udc_gac_hmusket_MusketCaller_callMusket(JNIEnv *e
 	// Some variables declaration
 	const char *args = (*env)->GetStringUTFChars(env, jstr, NULL);
 
-  char argv[strlen(args) + 1];
-
-  strcpy(argv, args);
-  printf("%s\n\n", argv);
-
-  // Some variables declaration
-  char delim = ' ';
-  int str_size = strlen(args) + 1;
-  char* split = strtok(argv, &delim);
-  int arguments_number = 3; // executable name, first and last argument
-  
-  // Count how many gaps are in the string
-  for (int i = 0; i < str_size; i++) {
-    if (argv[i] == delim){
-      arguments_number++;
-    }
-  }
-
-  // And create an array to save each argument
-  char* arguments[arguments_number];
-  arguments[0] = "musket";
-
-  // Do split and save it in arguments array
-  int i = 1;
-  while(split != NULL) {
-      arguments[i] = split;
-      split=strtok(NULL, &delim);
-      i++;
-  }
+	char argv2[strlen(args) + 1];
+	strcpy(argv2, args);
 	
-  for (int j = 0; j<arguments_number; j++) {
-    printf("%s\n", arguments[j]);
-  }
-  printf("\n%d\n", arguments_number);
+	char delim = ' ';
+	int str_size = strlen(argv2) + 1;
+	
+	int arguments_number = 1; // first argument
 
-	// Call musket's main
+	// Count how many gaps are in the string
+	for (int i = 0; i < str_size; i++) {
+		if (argv2[i] == delim){
+			arguments_number++;
+		}
+	}
+
+	char* split = strtok(argv2, " ");
+	// And create an array to save each argument
+	char* arguments[arguments_number];
+
+	// Do split and save it in arguments array
+	int i = 0;
+	while(split != NULL) {
+		arguments[i] = split;
+		split=strtok(NULL, " ");
+
+		i++;
+	}
+	
+	for (int j = 0; j<arguments_number; j++) {
+		printf("%s\n", arguments[j]);
+	}
+
+	printf("\n%d\n", arguments_number);
+
+	// Call musket's main method
 	main(arguments_number, arguments);
-
-	//return;
 }
