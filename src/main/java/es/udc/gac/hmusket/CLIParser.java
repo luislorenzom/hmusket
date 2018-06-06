@@ -75,37 +75,38 @@ public class CLIParser {
 		try {
 			CommandLine line = parser.parse(options, args);
 			if (line != null) {
-
+			    
 				if (line.hasOption("fileIn")) {
 					String[] valueAssociate = line.getOptionValues("fileIn");
 					if (valueAssociate != null) {
 						HMusket.fileIn = Arrays.asList(valueAssociate);
-						arguments += valueAssociate[0] + "_local";
 					}
 				}
-
+				
+                if (line.hasOption("fileType")) {
+                    String valueAssociate = line.getOptionValue("fileType");
+                    if (valueAssociate != null
+                            && (valueAssociate.equalsIgnoreCase("q") || valueAssociate.equalsIgnoreCase("a"))) {
+                        HMusket.fileType = valueAssociate;
+                    } else {
+                        throw new FileInputTypeNotFoundException(line.getOptionValue("fileType"));
+                    }
+                }
+				
+				if (line.hasOption("localCopyPath")) {
+				    String valueAssociate = line.getOptionValue("localCopyPath");
+				    if (valueAssociate != null) {
+				        String localCopyPath = CLIParser.getLocalCopyPath(valueAssociate);
+				        HMusket.localCopyPath = localCopyPath;
+				        arguments +=  localCopyPath;
+				    }
+				}
+				
 				if (line.hasOption("fileOut")) {
 					String valueAssociate = line.getOptionValue("fileOut");
 					if (valueAssociate != null) {
 						HMusket.fileOut = valueAssociate;
 						arguments += " -o " + valueAssociate;
-					}
-				}
-
-				if (line.hasOption("localCopyPath")) {
-					String valueAssociate = line.getOptionValue("localCopyPath");
-					if (valueAssociate != null) {
-						HMusket.localCopyPath = valueAssociate;
-					}
-				}
-
-				if (line.hasOption("fileType")) {
-					String valueAssociate = line.getOptionValue("fileType");
-					if (valueAssociate != null
-							&& (valueAssociate.equalsIgnoreCase("q") || valueAssociate.equalsIgnoreCase("a"))) {
-						HMusket.fileType = valueAssociate;
-					} else {
-						throw new FileInputTypeNotFoundException(line.getOptionValue("fileType"));
 					}
 				}
 
@@ -202,4 +203,26 @@ public class CLIParser {
 				null, true);
 		System.exit(0);
 	}
+	
+   private static String getLocalCopyPath(String folder) {
+        
+       String localPath = folder;
+       
+       // Checks the last char of localCopyPath
+       if (!folder.substring(folder.length() - 1).equals("/")) {
+           localPath += "/";
+       }
+        
+       // Creates file's name
+       String fileName = String.valueOf((System.currentTimeMillis()));
+        
+       if (HMusket.fileType.equalsIgnoreCase("a")) {
+           fileName += fileName + ".fasta";
+       } else if (HMusket.fileType.equalsIgnoreCase("q")) {
+           fileName += fileName + ".fastq";
+       }
+        
+       // Concats and returns it
+       return localPath + fileName;
+    }
 }

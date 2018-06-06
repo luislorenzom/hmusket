@@ -35,7 +35,7 @@ public class HMusket {
 		// and creates the string arguments to send it to musket
 		String arguments = CLIParser.parse(args);
 		conf.set("arguments", arguments);
-		conf.set("localSequenceDataset", localCopyPath);
+		conf.set("localSequenceDataset", HMusket.localCopyPath);
 
 		if (pairEnd) {
 			// Adds the second input file in the job configuration
