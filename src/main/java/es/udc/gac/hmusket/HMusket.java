@@ -22,6 +22,7 @@ public class HMusket {
 	public static List<String> fileIn = new ArrayList<>();
 	public static String fileOut;
 	public static String fileType;
+	public static String localCopyPath;
 	public static Boolean pairEnd = Boolean.FALSE;
 	private static Class<? extends SingleEndSequenceInputFormat> inputFormatClass;
 
@@ -34,7 +35,7 @@ public class HMusket {
 		// and creates the string arguments to send it to musket
 		String arguments = CLIParser.parse(args);
 		conf.set("arguments", arguments);
-		conf.set("localSequenceDataset", fileIn.get(0) + "_local");
+		conf.set("localSequenceDataset", localCopyPath);
 
 		if (pairEnd) {
 			// Adds the second input file in the job configuration

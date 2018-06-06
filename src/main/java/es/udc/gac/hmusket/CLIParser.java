@@ -54,11 +54,14 @@ public class CLIParser {
 				.desc("Minimum multiplicty for correct k-mers [only applicable when not using multiple k-mer sizes], default=0")
 				.build());
 
-		options.addOption(Option.builder("fileIn").argName("filePath").hasArg().required().numberOfArgs(Option.UNLIMITED_VALUES)
-				.desc("Dataset's path").build());
+		options.addOption(Option.builder("fileIn").argName("filePath").hasArg().required()
+				.numberOfArgs(Option.UNLIMITED_VALUES).desc("Dataset's path").build());
 
 		options.addOption(Option.builder("fileOut").argName("filePath").hasArg().required()
 				.desc("The single output file name").build());
+
+		options.addOption(Option.builder("localCopyPath").argName("filePath").hasArg().required()
+				.desc("Where is going to be copy the dataset's chunk in the compute node").build());
 
 		options.addOption(Option.builder("fileType").argName("a/q").hasArg().required()
 				.desc("File type <a> for FASTA files and <q> for FASTQ files").build());
@@ -89,6 +92,13 @@ public class CLIParser {
 					}
 				}
 
+				if (line.hasOption("localCopyPath")) {
+					String valueAssociate = line.getOptionValue("localCopyPath");
+					if (valueAssociate != null) {
+						HMusket.localCopyPath = valueAssociate;
+					}
+				}
+
 				if (line.hasOption("fileType")) {
 					String valueAssociate = line.getOptionValue("fileType");
 					if (valueAssociate != null
@@ -101,14 +111,15 @@ public class CLIParser {
 
 				if (line.hasOption("pairEnd")) {
 					HMusket.pairEnd = Boolean.TRUE;
-					
+
 					String[] fileInValues = line.getOptionValues("fileIn");
-					
+
 					if (fileInValues.length != 2) {
 						throw new PairEndWithoutTwoDatasetsException();
 					}
-					
-					arguments = "-omulti " + line.getOptionValue("fileOut") + " -inorder " + fileInValues[0] + " " + fileInValues[1];
+
+					arguments = "-omulti " + line.getOptionValue("fileOut") + " -inorder " + fileInValues[0] + " "
+							+ fileInValues[1];
 				}
 
 				if (line.hasOption("k")) {
@@ -174,21 +185,21 @@ public class CLIParser {
 				}
 
 			}
-			
+
 		} catch (ParseException | NumberFormatException e) {
 			CLIParser.showHelp(options);
-		} catch (FileInputTypeNotFoundException|PairEndWithoutTwoDatasetsException e) {
+		} catch (FileInputTypeNotFoundException | PairEndWithoutTwoDatasetsException e) {
 			// Custom error message
 			System.err.println(e.getMessage());
 			CLIParser.showHelp(options);
 		}
 		return arguments;
 	}
-	
+
 	private static void showHelp(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("hmusket", "-------------------------------------------------------------------",
-				options, null, true);
-		System.exit(0);		
+		formatter.printHelp("hmusket", "-------------------------------------------------------------------", options,
+				null, true);
+		System.exit(0);
 	}
 }
