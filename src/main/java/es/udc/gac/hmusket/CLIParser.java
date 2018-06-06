@@ -106,7 +106,7 @@ public class CLIParser {
 					String valueAssociate = line.getOptionValue("fileOut");
 					if (valueAssociate != null) {
 						HMusket.fileOut = valueAssociate;
-						arguments += " -o " + valueAssociate;
+						arguments += " -o " + valueAssociate + "_musket-output-" + String.valueOf((System.currentTimeMillis()));
 					}
 				}
 
