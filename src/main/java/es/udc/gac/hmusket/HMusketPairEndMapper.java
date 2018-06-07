@@ -60,5 +60,8 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 		// Delete both files
 		new File(context.getConfiguration().get("localSequenceDataset_left")).delete();
 		new File(context.getConfiguration().get("localSequenceDataset_right")).delete();
+		
+		// Upload the musket ouput to hdfs
+		// TODO
 	}
 }

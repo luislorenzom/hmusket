@@ -57,8 +57,8 @@ public class CLIParser {
 		options.addOption(Option.builder("fileIn").argName("filePath").hasArg().required()
 				.numberOfArgs(Option.UNLIMITED_VALUES).desc("Dataset's path").build());
 
-		options.addOption(Option.builder("fileOut").argName("filePath").hasArg().required()
-				.desc("The single output file name").build());
+		options.addOption(Option.builder("folderOut").argName("filePath").hasArg().required()
+				.desc("where is going to save the output").build());
 
 		options.addOption(Option.builder("localCopyPath").argName("filePath").hasArg().required()
 				.desc("Where is going to be copy the dataset's chunk in the compute node").build());
@@ -102,11 +102,15 @@ public class CLIParser {
 					}
 				}
 
-				if (line.hasOption("fileOut")) {
-					String valueAssociate = line.getOptionValue("fileOut");
+				if (line.hasOption("folderOut")) {
+					String valueAssociate = line.getOptionValue("folderOut");
 					if (valueAssociate != null) {
-						HMusket.fileOut = valueAssociate;
-						arguments += " -o " + valueAssociate + "-musket-" + String.valueOf((System.currentTimeMillis()));
+					    if (!valueAssociate.substring(valueAssociate.length() -1).equals("/")) {
+					        valueAssociate += "/";
+					    }
+						HMusket.folderOut = valueAssociate + "HMusket/";
+						HMusket.fileOut = /*HMusket.folderOut +*/ "/scratch/output-musket-" + String.valueOf((System.currentTimeMillis()));
+						arguments += " -o " + HMusket.fileOut;
 					}
 				}
 

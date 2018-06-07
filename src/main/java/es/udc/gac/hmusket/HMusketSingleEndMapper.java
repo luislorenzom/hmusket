@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -43,6 +45,16 @@ public class HMusketSingleEndMapper extends Mapper<LongWritable, Text, Text, Int
 		new MusketCaller().callMusket(arguments);
 		
 		// Delete file
-		new File(context.getConfiguration().get("localSequenceDataset"), "UTF-8").delete();		
+		new File(context.getConfiguration().get("localSequenceDataset"), "UTF-8").delete();
+		
+		// Upload the musket ouput to hdfs
+		FileSystem hdfs = FileSystem.get(context.getConfiguration());
+		
+		Path src = new Path(context.getConfiguration().get("fileOut"));
+		Path dst = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-" + String.valueOf((System.currentTimeMillis())));
+		
+		hdfs.create(dst);
+		
+		hdfs.copyFromLocalFile(src, dst);
 	}
 }
