@@ -48,7 +48,7 @@ public class HMusket {
 		job.setJarByClass(HMusket.class);
 
 		// Sets output path
-		FileOutputFormat.setOutputPath(job, new Path(HMusket.applicationName + "_" + "output_" + String.valueOf((System.currentTimeMillis()))));
+		FileOutputFormat.setOutputPath(job, new Path(fileOut + "-" +HMusket.applicationName + "-" + String.valueOf((System.currentTimeMillis()))));
 
 		// Establishes what kind of input format is required
 		if (fileType.equalsIgnoreCase("a")) {
