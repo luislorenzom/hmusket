@@ -18,12 +18,14 @@ import es.udc.gac.hadoop.sequence.parser.mapreduce.PairedEndSequenceInputFormat;
 import es.udc.gac.hadoop.sequence.parser.mapreduce.SingleEndSequenceInputFormat;
 
 public class HMusket {
-    
-    public static final String applicationName = "HMusket";
+
+	public static final String applicationName = "HMusket";
 	public static List<String> fileIn = new ArrayList<>();
 	public static String fileOut;
 	public static String fileType;
 	public static String localCopyPath;
+	public static String localLeftCopyPath;
+	public static String localRightCopyPath;
 	public static Boolean pairEnd = Boolean.FALSE;
 	private static Class<? extends SingleEndSequenceInputFormat> inputFormatClass;
 
@@ -39,8 +41,10 @@ public class HMusket {
 		conf.set("localSequenceDataset", HMusket.localCopyPath);
 
 		if (pairEnd) {
-			// Adds the second input file in the job configuration
-			conf.set("localSequenceDataset_right", fileIn.get(1) + "_local");
+			// Adds the inputs file in the job configuration for pair-end
+			// dataset
+			conf.set("localSequenceDataset_left", HMusket.localLeftCopyPath);
+			conf.set("localSequenceDataset_right", HMusket.localRightCopyPath);
 		}
 
 		// Creates a job
@@ -48,7 +52,7 @@ public class HMusket {
 		job.setJarByClass(HMusket.class);
 
 		// Sets output path
-		FileOutputFormat.setOutputPath(job, new Path(fileOut + "-" +HMusket.applicationName + "-" + String.valueOf((System.currentTimeMillis()))));
+		FileOutputFormat.setOutputPath(job, new Path(fileOut + "-" + HMusket.applicationName + "-" + String.valueOf((System.currentTimeMillis()))));
 
 		// Establishes what kind of input format is required
 		if (fileType.equalsIgnoreCase("a")) {

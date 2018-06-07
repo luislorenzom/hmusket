@@ -1,5 +1,6 @@
 package es.udc.gac.hmusket;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 			throws IOException, InterruptedException {
 
 		super.setup(context);
-		this.leftWriter = new PrintWriter(context.getConfiguration().get("localSequenceDataset"), "UTF-8");
+		this.leftWriter = new PrintWriter(context.getConfiguration().get("localSequenceDataset_left"), "UTF-8");
 		this.rightWriter = new PrintWriter(context.getConfiguration().get("localSequenceDataset_right"), "UTF-8");
 	}
 
@@ -55,5 +56,9 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 
 		// Native call to musket
 		new MusketCaller().callMusket(arguments);
+
+		// Delete both files
+		new File(context.getConfiguration().get("localSequenceDataset_left")).delete();
+		new File(context.getConfiguration().get("localSequenceDataset_right")).delete();
 	}
 }
