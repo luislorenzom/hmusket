@@ -105,11 +105,12 @@ public class CLIParser {
 				if (line.hasOption("folderOut")) {
 					String valueAssociate = line.getOptionValue("folderOut");
 					if (valueAssociate != null) {
-					    if (!valueAssociate.substring(valueAssociate.length() -1).equals("/")) {
-					        valueAssociate += "/";
-					    }
+						if (!valueAssociate.substring(valueAssociate.length() - 1).equals("/")) {
+							valueAssociate += "/";
+						}
 						HMusket.folderOut = valueAssociate + "HMusket/";
-						HMusket.fileOut = /*HMusket.folderOut +*/ "/scratch/output-musket-" + String.valueOf((System.currentTimeMillis()));
+						HMusket.fileOut = /* HMusket.folderOut + */ "/scratch/output-musket-"
+								+ String.valueOf((System.currentTimeMillis()));
 						arguments += " -o " + HMusket.fileOut;
 					}
 				}
@@ -123,13 +124,17 @@ public class CLIParser {
 						throw new PairEndWithoutTwoDatasetsException();
 					}
 
-					String fileOutputPath = line.getOptionValue("fileOut") + "_musket-output-"
-							+ String.valueOf((System.currentTimeMillis()));
-					// FIXME
-					HMusket.localLeftCopyPath = HMusket.localCopyPath;
-					HMusket.localRightCopyPath = HMusket.localCopyPath;
+					Integer endIndex = HMusket.localCopyPath.lastIndexOf('.');
+					String fileTemplate = HMusket.localCopyPath.substring(0, endIndex);
+					String fileExtension = HMusket.localCopyPath.substring(endIndex, HMusket.localCopyPath.length());
 
-					arguments = "musket -omulti " + fileOutputPath + " -inorder " + HMusket.localLeftCopyPath + " "
+					// FIXME
+					// /scratch/HMusket_1528413193319HMusket_1528413193319-left.fastq
+					// /scratch/HMusket_1528413193319HMusket_1528413193319-right..fastq
+					HMusket.localLeftCopyPath = fileTemplate + "-left" + fileExtension;
+					HMusket.localRightCopyPath = fileTemplate + "-right" + fileExtension;
+
+					arguments = "musket -omulti " + HMusket.fileOut + " -inorder " + HMusket.localLeftCopyPath + " "
 							+ HMusket.localRightCopyPath;
 				}
 
@@ -227,9 +232,9 @@ public class CLIParser {
 		String fileName = HMusket.applicationName + "_" + String.valueOf((System.currentTimeMillis()));
 
 		if (HMusket.fileType.equalsIgnoreCase("a")) {
-			fileName += fileName + ".fasta";
+			fileName += ".fasta";
 		} else if (HMusket.fileType.equalsIgnoreCase("q")) {
-			fileName += fileName + ".fastq";
+			fileName += ".fastq";
 		}
 
 		// Concats and returns it

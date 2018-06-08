@@ -35,88 +35,88 @@ public class HMusket extends Configured implements Tool {
 	private static Class<? extends SingleEndSequenceInputFormat> inputFormatClass;
 
 	public static void main(String[] args) throws Exception {
-	    System.exit(ToolRunner.run(new Configuration(), new HMusket(), args));
+		System.exit(ToolRunner.run(new Configuration(), new HMusket(), args));
 	}
 
-    @Override
-    public int run(String[] args) throws Exception {
+	@Override
+	public int run(String[] args) throws Exception {
 
-        // Instances a configuration
-        Configuration conf = this.getConf();
+		// Instances a configuration
+		Configuration conf = this.getConf();
 
-        // Parses arguments. Establishes some global variables
-        // and creates the string arguments to send it to musket
-        String arguments = CLIParser.parse(args);
-        conf.set("arguments", arguments);
-        conf.set("localSequenceDataset", HMusket.localCopyPath);
+		// Parses arguments. Establishes some global variables
+		// and creates the string arguments to send it to musket
+		String arguments = CLIParser.parse(args);
+		conf.set("arguments", arguments);
+		conf.set("localSequenceDataset", HMusket.localCopyPath);
 
-        if (pairEnd) {
-            // Adds the inputs file in the job configuration for pair-end
-            // dataset
-            conf.set("localSequenceDataset_left", HMusket.localLeftCopyPath);
-            conf.set("localSequenceDataset_right", HMusket.localRightCopyPath);
-        }
+		if (pairEnd) {
+			// Adds the inputs file in the job configuration for pair-end
+			// dataset
+			conf.set("localSequenceDataset_left", HMusket.localLeftCopyPath);
+			conf.set("localSequenceDataset_right", HMusket.localRightCopyPath);
+		}
 
-        // --------------------------------------
-        // conf set fs.default.name - 
-        FileSystem hdfs = FileSystem.get(conf);
-        
-        Path outputFolder = new Path(folderOut);
-        
-        if (hdfs.exists(outputFolder)) {
-            hdfs.delete(outputFolder, true);
-        }
-        
-        hdfs.mkdirs(outputFolder);
-        
-        conf.set("folderOut", HMusket.folderOut);
-        conf.set("fileOut", HMusket.fileOut);
-        // --------------------------------------
+		// --------------------------------------
+		FileSystem hdfs = FileSystem.get(conf);
 
-        // Creates a job
-        Job job = Job.getInstance(conf, HMusket.applicationName);
-        job.setJarByClass(HMusket.class);
-        
-        // Sets output path
-        FileOutputFormat.setOutputPath(job, new Path(HMusket.folderOut + "/outputPath/" + HMusket.applicationName + "-" + String.valueOf((System.currentTimeMillis()))));
+		Path outputFolder = new Path(folderOut);
 
-        // Establishes what kind of input format is required
-        if (fileType.equalsIgnoreCase("a")) {
-            inputFormatClass = FastAInputFormat.class;
-        } else if (fileType.equalsIgnoreCase("q")) {
-            inputFormatClass = FastQInputFormat.class;
-        }
+		if (hdfs.exists(outputFolder)) {
+			hdfs.delete(outputFolder, true);
+		}
 
-        // Sets input format class
-        if (pairEnd) {
-            // Sets input format class for paired end dataset
-            job.setInputFormatClass(PairedEndSequenceInputFormat.class);
+		hdfs.mkdirs(outputFolder);
 
-            // Sets the input path and also the input format class
-            PairedEndSequenceInputFormat.setLeftInputPath(job, new Path(fileIn.get(0)), inputFormatClass);
-            PairedEndSequenceInputFormat.setRightInputPath(job, new Path(fileIn.get(1)), inputFormatClass);
+		conf.set("folderOut", HMusket.folderOut);
+		conf.set("fileOut", HMusket.fileOut);
+		// --------------------------------------
 
-            // Sets Mapper
-            job.setMapperClass(HMusketPairEndMapper.class);
-        } else {
-            // Sets input format class for single end dataset
-            job.setInputFormatClass(inputFormatClass);
+		// Creates a job
+		Job job = Job.getInstance(conf, HMusket.applicationName);
+		job.setJarByClass(HMusket.class);
 
-            // Sets input path
-            FileInputFormat.addInputPath(job, new Path(fileIn.get(0)));
+		// Sets output path
+		FileOutputFormat.setOutputPath(job, new Path(HMusket.folderOut + "/outputPath/" + HMusket.applicationName + "-"
+				+ String.valueOf((System.currentTimeMillis()))));
 
-            // Sets Mapper
-            job.setMapperClass(HMusketSingleEndMapper.class);
-        }
+		// Establishes what kind of input format is required
+		if (fileType.equalsIgnoreCase("a")) {
+			inputFormatClass = FastAInputFormat.class;
+		} else if (fileType.equalsIgnoreCase("q")) {
+			inputFormatClass = FastQInputFormat.class;
+		}
 
-        // Sets Reducers
-        job.setNumReduceTasks(0);
+		// Sets input format class
+		if (pairEnd) {
+			// Sets input format class for paired end dataset
+			job.setInputFormatClass(PairedEndSequenceInputFormat.class);
 
-        // Establishes job's key, value and format class
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-        job.setOutputFormatClass(TextOutputFormat.class);
-        
-        return job.waitForCompletion(true) ? 0 : -1;
-    }
+			// Sets the input path and also the input format class
+			PairedEndSequenceInputFormat.setLeftInputPath(job, new Path(fileIn.get(0)), inputFormatClass);
+			PairedEndSequenceInputFormat.setRightInputPath(job, new Path(fileIn.get(1)), inputFormatClass);
+
+			// Sets Mapper
+			job.setMapperClass(HMusketPairEndMapper.class);
+		} else {
+			// Sets input format class for single end dataset
+			job.setInputFormatClass(inputFormatClass);
+
+			// Sets input path
+			FileInputFormat.addInputPath(job, new Path(fileIn.get(0)));
+
+			// Sets Mapper
+			job.setMapperClass(HMusketSingleEndMapper.class);
+		}
+
+		// Sets Reducers
+		job.setNumReduceTasks(0);
+
+		// Establishes job's key, value and format class
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(IntWritable.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
+
+		return job.waitForCompletion(true) ? 0 : -1;
+	}
 }
