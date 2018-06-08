@@ -29,18 +29,18 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 	@Override
 	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, Text, IntWritable>.Context context)
 			throws IOException, InterruptedException {
-
+	    	    
 		// Converts and saves the edge between both datasets
 		Integer k = Integer.parseInt(key.toString());
-
+		
 		// Gets the different datasets
 		byte[] valueAsStringArray = value.copyBytes();
 		byte[] leftValue = Arrays.copyOfRange(valueAsStringArray, 0, k);
 		byte[] rightValue = Arrays.copyOfRange(valueAsStringArray, k, valueAsStringArray.length);
 
 		// Prints both datasets
-		this.leftWriter.println(leftValue);
-		this.rightWriter.println(rightValue);
+		this.leftWriter.println(new String(leftValue));
+		this.rightWriter.println(new String(rightValue));
 	}
 
 	@Override
