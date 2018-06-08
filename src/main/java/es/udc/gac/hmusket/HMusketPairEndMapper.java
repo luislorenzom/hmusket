@@ -60,18 +60,21 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 		new MusketCaller().callMusket(arguments);
 
 		// Delete both files
-		new File(context.getConfiguration().get("localSequenceDataset_left")).delete();
-		new File(context.getConfiguration().get("localSequenceDataset_right")).delete();
+		new File(context.getConfiguration().get("localSequenceDataset_left"), "UTF-8").delete();
+		new File(context.getConfiguration().get("localSequenceDataset_right"), "UTF-8").delete();
 
 		// Upload the musket ouput to hdfs
 		FileSystem hdfs = FileSystem.get(context.getConfiguration());
 
-		Path src = new Path(context.getConfiguration().get("fileOut"));
-		Path dst = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-"
-				+ String.valueOf((System.currentTimeMillis())));
+		Path src0 = new Path(context.getConfiguration().get("fileOut") + ".0");
+		Path src1 = new Path(context.getConfiguration().get("fileOut") + ".1");
+		
+		Path dst0 = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-"
+				+ String.valueOf((System.currentTimeMillis())) + ".0");
+		Path dst1 = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-"
+		        + String.valueOf((System.currentTimeMillis())) + ".1");
 
-		hdfs.create(dst);
-
-		hdfs.copyFromLocalFile(src, dst);
+		hdfs.copyFromLocalFile(src0, dst0);
+		hdfs.copyFromLocalFile(src1, dst1);
 	}
 }

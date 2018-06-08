@@ -128,9 +128,6 @@ public class CLIParser {
 					String fileTemplate = HMusket.localCopyPath.substring(0, endIndex);
 					String fileExtension = HMusket.localCopyPath.substring(endIndex, HMusket.localCopyPath.length());
 
-					// FIXME
-					// /scratch/HMusket_1528413193319HMusket_1528413193319-left.fastq
-					// /scratch/HMusket_1528413193319HMusket_1528413193319-right..fastq
 					HMusket.localLeftCopyPath = fileTemplate + "-left" + fileExtension;
 					HMusket.localRightCopyPath = fileTemplate + "-right" + fileExtension;
 
