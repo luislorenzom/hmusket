@@ -11,6 +11,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{caption}
 
 % A few listings color definition
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -74,73 +75,63 @@ Big Data, Hadoop, Map-Reduce, k-mer, sequence corrector
 \end{IEEEkeywords}
 
 \section{Introducción}
-Debido a la aparición de la tecnologías conocidas como \textit{Next Generation Sequence} (NGS) se han obtenido grandes volúmenes de datos genéticos procedentes de diversos seres vivos (humanos, animales, plantas, etc). Estos vastos conjuntos de datos se utilizan principalmente para el estudio de los seres vivos secuenciados. 
-No obstante con el abaratamiento de estas tecnologías acercan a los científicos hacia nuevos objetivos y metas donde tienen cabida todos estos datos.
+Debido a la aparición de la tecnologías conocidas como \textit{Next Generation Sequence} (NGS) se han obtenido grandes volúmenes de datos genéticos procedentes de diversos seres vivos (humanos, animales, plantas, etc). Estos vastos conjuntos de datos se utilizan principalmente para el estudio en detalle de dichos seres. 
+No obstante el abaratamiento de estas tecnologías acerca a los científicos hacia nuevos objetivos donde tienen cabida todos estos datos.
 \\
 
-Además del ya citado estudio de los seres vivos, otros grandes objetivos o campos de estudios en el área de las ciencias de la vida (biología, medicina, etc.) es la predicción de enfermedades, de carácter o predisposición genética, en un estadío temprano para evitar futuras complicaciones en el paciente. \\
-La evasión del fraude en productos alimenticios, tanto para detectar la procedencia u origen del producto en cuestión es otro de las grandes áreas de estudio principalmente por el tema comercial.\\
-Por último, la interacción de la información contenida en los datos obtenidos durante la fase de secuenciación junto con una base de conocimiento tanto de las áreas de la farmacología y patología da como resultado la farmacogenética, pudiendo predecir qué fármaco es más efectivo, ideal o quizás poder diseñar un fármaco para un individuo.
+Además del ya citado estudio de los seres vivos, otros grandes propósitos o campos de estudios en el área de las ciencias de la vida (biología, medicina, etc.) es la predicción de enfermedades, de carácter/predisposición genética, en un estadio temprano para evitar futuras complicaciones en el paciente. \\
+La metagenómica (estudio desde el punto de vista genómico de comunidades microbianas) ha adquirido gran importancia en los últimos años ya que por medio de estos se estudios se puede detectar el fraude o malas condiciones en la industria alimentaria, determinar condiciones medioambientales de una zona e incluso detectar ciertas enfermedades por los patógenos registrados en la muestra.\\
+Por último, la interacción de la información genética adquirida durante la fase de secuenciación junto con una base de conocimiento de las áreas de la farmacología y patología da como resultado la farmacogenética, pudiendo predecir qué fármaco es más efectivo para un paciente o quizás dar lugar al diseño de un fármaco.
 \\
 
-No obstante para llegar a tales fines y obtener unos resultados adecuados son necesarios una serie de pasos previos. Además de obtener una muestra de ADN y secuenciarla es necesario corregir ese conglomerado de datos, ya que durante la fase de amplificación/síntesis de nuevas copias por PCR es posible que se incorporen errores debido a fallos de ADN polimerasa.\\ Afortunadamente esta clase de fallos siguen un proceso estocástico y pueden ser corregidas por medio de diversos algoritmos.
+No obstante para llegar a tales fines y obtener unos resultados adecuados son necesarios una serie de pasos previos. Además de obtener una muestra de ADN y secuenciarla es necesario corregir los datos obtenidos durante la secuenciación, ya que durante la fase de amplificación/síntesis de nuevas copias por medio de la PCR es posible que se incorporen errores debido a de fallos del ADN polimerasa.\\ Afortunadamente esta clase de fallos siguen un proceso estocástico y pueden ser corregidas en su mayoría a través de diversos algoritmos.
 \\
 
-Debido a la problemática indicando en el párrafo superior junto con la gran demanda de datos genéticos que se están sucediendo las soluciones tradicionales para corregir los errores generados durante la fase de amplificación producen un cuello de botella a la hora de emplear esos datos ya que la mayoría de estas soluciones son secuenciales o de memoria compartida no logran reducir considerablemente los tiempos de pre-procesado de los datos.
+Dada la problemática anteriormente citada sumada a la gran demanda de datos genéticos que se está produciendo a lo largo de esta última década, tiene como consecuencia que las soluciones tradicionales que corrigen los errores generados durante la fase de amplificación produzcan un cuello de botella a la hora de emplear esos datos. La mayoría de estas soluciones son secuenciales o de memoria compartida y no logran reducir considerablemente los tiempos de post-procesado de estos datos.
 \\
 
-En el propósito de este trabajo es de proveer a los científicos una herramienta de memoria distribuida que pueda reducir el tiempo de corrección de las secuencias, además de esto, en este trabajo se realiza una análisis de las herramientas que hay disponibles en el mercado (tanto de memoria compartida como distribuida) una introducción y explicación de las tecnologías utilizadas a lo largo del proyecto, para posteriormente detallar el diseño y la implementación del software aquí expuesto, y finalizando con una serie de resultados donde se muestran una comparativa de tiempos y unas conclusiones
+En el propósito de este trabajo es de proveer a los científicos con una herramienta de memoria distribuida que pueda reducir el tiempo de corrección de las secuencias. Además de presentar la herramienta es de interés detallar las tecnologías utilizadas a la largo del proyecto, ver que otras alternativas hay en el mercado para llevar a cabo tal fin (ya sean de memoria compartida o distribuida), comentar el diseño de la herramienta y los entresijos de la implementación de la misma, para finalizar con un análisis experimental de dicha herramienta junto con una serie de conclusiones.
 
 \section{Trabajos relacionados}
 
-A lo largo de esta sección se presentarán las diferentes soluciones que hay actualmente en el mercado para la tarea de corregir las secuencias además de indicar tanto sus bondades y sus defectos.
+A lo largo de esta sección se presentarán las diferentes soluciones que actualmente hay en el mercado para realizar la tarea de corrección de secuencias además de un breve comentario acerca de sus bondades y defectos.
 
 \subsection{Memoria compartida}
 
-Dentro del grupo de soluciones de memoria compartida cabe destacar las soluciones basada en GPU como son CUDE-EC y DecGPU las cuales utilizan un algoritmo basado en efectuar lecturas cortas del genoma lo que no provee una solución completa de errores ni una alta precisión en los resultados, no obstante al estar desarrolladas para GPUs presentan una índice de escalabilidad alto.\\
+Dentro del grupo de soluciones de memoria compartida cabe destacar las soluciones basada en GPU como son CUDE-EC y DecGPU las cuales utilizan un algoritmo basado en la realización de lecturas cortas del genoma, lo que no provee una solución completa de errores ni una alta precisión en los resultados, no obstante al estar desarrolladas para GPUs presentan una índice de escalabilidad muy alto.\\
 
-Otra solución que utiliza un algoritmo basado en lecturas cortas del genoma usando en este caso CPU en lugar de GPU es SOAP corrector. Posteriores versiones del algoritmo utilizan para determinadas operaciones un método basado en el grafo De Brujin, lo cual reduce drásticamente el uso de memoria en casos casos donde la longitud del genoma pueda presentar problemas.\\
+Otra solución que utiliza un algoritmo basado en lecturas cortas del genoma, usando CPU en lugar de GPU, es SOAP Corrector. Recientes versiones de este programa utilizan, en unas determinadas operaciones, un método basado en el grafo De Brujin, lo cual reduce drásticamente el uso de memoria en casos donde la longitud del genoma pueda presentar problemas.\\
 
-Siguiendo con las soluciones que utilizan o están basadas en modelos de grafos, se encuentra Reptile, este software hace uso de un grafo Hamming para resolver las posibles ambigüedades que se encuentren en el genoma o región genómica a corregir, muy útil en casos que presenten errores de translocación.\\
+Siguiendo con las soluciones que están basadas en modelos de grafos, se encuentra Reptile, este software hace uso de un grafo Hamming, combinado junto con el análisis del espectro k-mer, para resolver las posibles ambigüedades que se encuentren en el genoma o región genómica a corregir, muy útil en casos que presenten errores de translocación.\\
 
-Sin ser un software basado en un modelo de grafos, SGA consigue optimizar el uso de la memoria utilizando la tranformada de Burrows-Wheeler y el FM-Index para representar el espectro k-mer de la región genómica.\\
+Sin ser un software basado en un modelo de grafos, SGA consigue optimizar el uso de la memoria utilizando la trasformada de Burrows-Wheeler y el FM-Index para representar el espectro k-mer de la región genómica.\\
 
 Además de los métodos de lecturas cortas y métodos basados en grafos hay alternativas basadas en modelos probabilísticos como por ejemplo: Quake, este corrector utiliza la probabilidad acumulada de los k-mer que conforman el genoma para poder clasificar si se trata de un error o no.\\
 
-También existen soluciones que combinan dos posibles como por ejemplo: Hammer que se compone de una solución basada en un grafo Hamming y un modelo probabilístico de la probabilidad acumulada de los k-mer, al igual que hace Quake.\\
+Otras soluciones combinan dos posibles modelos como por ejemplo: Hammer que se compone de una solución basada en un grafo Hamming y un modelo probabilístico similar al que realiza Quake.\\
 
-Por último indicar correctores que hacen uso de arrays de sufijos como son HiTEC, el cual instancia el genoma con distintos k-mers para posteriormente crear esos arrays y analizar los errores, o SHREC que utiliza un método parecido por HiTEC pero para la detección de indels y sustituciones.\\
+Por último, cabe destacar que algunos correctores hacen uso de arrays de sufijos, como por ejemplo HiTEC, el cual instancia el genoma con distintos k-mers para posteriormente construir esos arrays y analizar los errores, o SHREC que utiliza un método parecido por HiTEC pero para la detección de indels y sustituciones.\\
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%% TODO %%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Memoria distribuida}
+Dada la reciente necesidad de un post-procesado masivo de datos apenas hay soluciones de memoria distribuida para la corrección de errores. Solo destacan dos soluciones en este paradigma:\\
 
-The IEEEtran class file is used to format your paper and style the text. All margins, 
-column widths, line spaces, and text fonts are prescribed; please do not 
-alter them. You may note peculiarities. For example, the head margin
-measures proportionately more than is customary. This measurement 
-and others are deliberate, using specifications that anticipate your paper 
-as one part of the entire proceedings, and not as an independent document. 
-Please do not revise any of the current designations.\\	
+Quake, adaptación de la versión de memoria compartida al entorno Hadoop, donde se distribuye el dataset entre varios nodos y se ejecutan varias instancias del software, esta versión ha sido descartada por sus desarrolladores ya que se obtienen tiempos superiores a la versión original de memoria compartida.\\
 
-Quake\\
-
-Cloud-CRS
+CloudRS, software creado originalmente para el entorno Hadoop mediante el paradigma Map/reduce, pese a ser la única solución de memoria distribuida no proporciona unos resultados con gran cobertura genética, además de requerir un preprocesado del dataset antes de subirlo a HDFS, lo cual causa un cuello de botella.\\
 
 \section{Conocimiento previo}
 
-A lo largo de esta sección se expondrán y detallarán brevemente las diversas tecnologías utilizadas en este proyecto.
+A través de esta sección se pretende exponer y detallar brevemente las diversas tecnologías utilizadas en este proyecto.
 
 \subsection{Hadoop}
-Framework, de código abierto, desarrollado en Java el cual esta orientado a la ejecución de aplicaciones distribuidas en un entorno clúster y al procesamiento de forma eficiente de grandes conjuntos de datos. Proveyendo de un ecosistema que permite a otras aplicaciones comunicarse entre si, hacer uso del mismo sistema de recursos (YARN) o de compartir el sistema de ficheros distribuido (HDFS).
+Framework, de código abierto, desarrollado en Java el cual esta orientado a la ejecución de aplicaciones distribuidas en un entorno cluster y al procesamiento de forma eficiente de grandes conjuntos de datos. Proveyendo de un ecosistema que permite a otras aplicaciones comunicarse entre si, hacer uso del mismo sistema de recursos (YARN) o de compartir un sistema de ficheros distribuido (HDFS).
 
 \subsection{Map-Reduce}
-Modelo de programación que surge ante la necesidad de procesar cantidades ingentes de datos. Este paradigma consta de dos operaciones.\\
+Modelo de programación que surge ante la necesidad de procesar cantidades ingentes de datos. Este paradigma consta de dos operaciones fundamentales.\\
 
-La operación Map convierte un par (clave, valor) en otro conjunto intermedio de datos en el mismo formato de tupla. Este formato de tupla hace mucho mas eficiente el procesado de los datos y una futura reconstrucción de los mismos.\\
+La operación Map convierte un par (clave, valor) en otro conjunto intermedio de datos en el mismo formato de tupla. Dicho formato hace mucho más eficiente el procesado de los datos y una futura reconstrucción de los mismos.\\
 
-\begin{lstlisting}
+\begin{lstlisting}[caption=Ejemplo de código Map]
 # Se inicializa un dataset con unos valores
 dataset = [1, 2, 3, 4, 5]
 # Se realiza la operacion de elevar al 
@@ -150,53 +141,56 @@ dataset = list(map(lambda x: x**2, dataset))
 # dataset = [1, 4, 9, 16, 25]
 \end{lstlisting}
 
-La operación Reduce utiliza los conjuntos de datos intermedios generados por las operaciones Map para agruparlos y mostrar un resultado final.
+La operación Reduce utiliza los conjuntos de datos, ya sean intermedios generados por las operaciones Map, o lo datos originales para agruparlos y mostrar un resultado final.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption=Ejemplo de código Reduce]
 # Se inicializa un dataset con unos valores
 dataset = [1, 2, 3, 4, 5]
-# Al igual que en el ejemplo anterior se utiliza una
-# funcion lambda, en este caso la multiplicacion de dos numeros
+# Al igual que en el ejemplo anterior 
+# se utiliza unafuncion lambda, en este caso
+# la multiplicacion de dos numeros
 value = reduce((lambda x, y: x * y), dataset)
 # value = 120
 \end{lstlisting}
 
 \subsection{HDFS}
-Sistema de ficheros distribuido que permite ejecutar las aplicaciones del ecosistema Hadoop con una alta tolerancia a fallos, además de facilitar el acceso de los datos a todo el conjunto de computadores que componen el clúster.
+Sistema de ficheros distribuido que permite a las aplicaciones del ecosistema Hadoop trabajar con una alta tolerancia a fallos, además de facilitar el acceso de los datos repartidos entre todo el conjunto de computadores que componen el clúster.
 
 \subsection{HSP}
 Hadoop Sequence Parser (HSP) es una librería desarrollada en Java para el parseo de datasets en formato Fasta o Fastq almacenados en Hadoop Distributed File System (HDFS).
 
 \subsection{JNI}
-Framework que permite que un determinado código Java ejecutado sobre la JVM ejecute y reciba llamadas desde código nativo, es decir, programas y/o librerías desarrolladas en C, C++ o Assembler.
+Framework que permite que un determinado código Java ejecutado sobre la JVM envíe y reciba llamadas desde código nativo, es decir, programas y/o librerías desarrolladas en C, C++ o Assembler.
 
 \subsection{Musket}
-Software que permite la corrección de conjuntos de datos secuencias genómicas en base al espectro k-mer de las mismas, este programa esta acelerado mediante la API de OpenMP pudiendo paralelizar parte de su pipeline de corrección genómica entre los distintos cores de la máquina donde se esta ejecutando.\\
-Para realizar dicha aceleración los desarrolladores del software decidieron abordar este problema utilizando un patrón maestro esclavo, por el cual sigue un proporción de x maestros frente a y esclavos para evitar cualquier tipo de cuello de botella. Además de lo ya citado anteriormente este corrector ofrece, gracias al uso del análisis del espectro k-mer una gran cobertura de todo el código genético procesado.
+Software que permite la corrección de datos secuencias genómicos en base al espectro k-mer de las mismas, este programa esta acelerado mediante la API de OpenMP pudiendo paralelizar parte de su pipeline de corrección de datos entre los distintos cores de la máquina donde se esta ejecutando.\\
+Para realizar dicha aceleración los desarrolladores del software decidieron abordar este problema utilizando un patrón maestro esclavo, el uso de este patrón es para evitar cualquier tipo de cuello de botella y procesos ociosos. Además de lo ya citado anteriormente este corrector ofrece, gracias al uso del análisis del espectro k-mer una gran cobertura de todo el código genético procesado.
 
 \section{Diseño e implementación}
 
-Para el desarrollo del presente trabajo se tuvieron que completar pequeños hitos que componen la totalidad del dicho proyecto, a continuación se detallan con total exactitud en que consistieron tales hitos, es decir, comentar el problema que le dio origen y que solución/estrategias se utilizaron para alcanzar la solución.\\
-
 En lineas generales lo se busca en este proyecto es distribuir entre varios nodos un determinado dataset ya sea fasta o fastq en modo single-end o pair-end y ejecutar varias instancias del software musket para finalmente hacer un merge de todas las salidas.\\
+El principal motivo de usar musket y no otro corrector de secuencias como puede se Reptile (alternativa que también usa el espectro k-mer) es porque según la literatura ha sido el mejor corrector en relación datos corregidos/cobertura del genoma.\\
 
-No obstante antes de entrar en detalle, se dará una visión general de como son las aplicaciones map/reduce.
+Para el desarrollo del presente trabajo se tuvieron que completar dos hitos que componen la totalidad del dicho proyecto, en los posteriores párrafos se detallan más, pero en esencia dichos objetivos fueron la creación de una librería para ejecutar el algoritmo de musket y la creación de una aplicación distribuida que divida el conjuntos de datos de entrada en distintos nodos de computo y ejecute la librería que contiene el algoritmo de corrección de secuencias de musket.
 
-\subsection{Estructura general}
-Las aplicaciones Map/Reduce, por lo general, consiste en: un driver donde se configura la aplicación (ficheros de entrada, salida, formatos con los que va a trabajar, etc), se crea un job, al cual se le indican los mappers y los reducers con los que va a trabajar. Junto con el driver se tienen que implementar las clases Map y Reduce que se le indican en el driver siguiendo un ``ciclo de vida'' en ambos casos:
+No obstante antes de detallar la implementación del presente trabajo conviene dar una visión general de como son las aplicaciones Map/Reduce.
+
+\subsection{Estructura general de una aplicación Map/Reduce}
+Las aplicaciones Map/Reduce, por lo general, consiste en: un driver donde se configura la aplicación (ficheros de entrada, salida, formatos con los que va a trabajar, etc), se crea el job a ejecutar, al cual se le indican los mappers y los reducers con los que va a trabajar, y que tienen que ser implementados junto con driver.\\
+Estas clases Map y Reduce siguen el siguiente ``ciclo de vida'':
 
 \begin{itemize}
-	\item Set up: operación que se realiza al inicio de la etapa map o reduce
+	\item Setup: operación que se realiza al inicio de la etapa map o reduce
 	\item Map o Reduce: operación/función que se realizada por cada par (clave, valor) del conjunto de datos a manejar.
-	\item Clean up: operación que se realiza al inicio de la etapa map o reduce.
+	\item Cleanup: operación que se realiza al final de la etapa map o reduce.
 \end{itemize}
 
-Una vez detallado la estructura de una aplicación map/reduce se puede detallar como funciona y como esta organizado HMusket.
-
 \subsection{Desarrollo de la aplicación Map/Reduce}
-HMusket sigue la estructura indicada en el aparatado anterior, en el driver se recogen los parámetros de entrada y se invoca el método parse de la clase CLIParse para evaluar la obligatoriedad de los parámetros de entrada, configurar el driver utilizando los parámetros de entrada y generar un string que conforme los argumentos que recibirá musket para corregir las secuencias del dataset.\\
-Una vez configurado el driver establece los ficheros de entrada y salida de los mappers, en este caso hace uno de las clases InputFormat de la librería HSP, de esta manera cada mapper recibe un parte proporcional del dataset, en el caso de los fastq, se recibe por cada secuencia el id, la cadena de las bases nitrogenadas y los indicadores de calidad, sin tener que modificar el formato del fichero de entrada, tan solo subiéndolo previamente a HDFS.\\
-Los distintos mappers que se manejan en esta aplicación durante la fase de setup instancian un printWriter para posteriormente en la etapa map poder volcar toda la información a disco duro local del nodo de computo. Finalmente en la etapa cleanup se cierra el buffer de escritura del printWriter y se llama al método callMusket de la clase MusketCaller, que previamente a cargado en memoria la librería estática donde esta la funcionalidad de musket, el string que conforma los argumentos de musket generado en el método parse de la clase CLIParse. Finalmente elimina los archivos locales que se utilizaron para la ejecución de musket y se suben a HDFS para que simplemente se tenga que hacer un merge de los mismos.
+HMusket sigue la estructura indicada en el aparatado anterior, en el driver se recogen los parámetros de entrada que recibe la aplicación y se invoca el método parse de la clase CLIParse para evaluar la obligatoriedad de estos, configurar el driver utilizando los parámetros de entrada y generar un string que conforme los argumentos que recibirá la librería de musket para ejecutar el algoritmo de corrección de las secuencias del dataset.\\
+Una vez configurado el driver establece los ficheros de entrada y salida de los mappers, en este caso hace uso de las clases InputFormat de la librería HSP. Esto es necesario para que Hadoop sepa que tipo de información esta procesando cada mapper, es decir, saber si la información que esta recibiendo es de tipo fasta, donde la información de una cadena de genes esta agrupada en dos líneas, o un fastq, que a mayores de la cadena de ADN y los identificadores muestra la calidad de las bases. De esta manera cada mapper recibe un parte proporcional del dataset, evitando de esta manera que por ejemplo un mapper reciba de entrada las secuencias y otro mapper la solo calidad de las mismas, además, se evita cualquier tipo de pre-procesado del dataset, evitando cuellos de botella, tanto solo se tiene que subir previamente el dataset a HDFS.\\
+
+Los distintos mappers que se manejan en esta aplicación durante la fase de setup instancian un printWriter para posteriormente en la etapa map poder volcar toda la información al disco duro local del nodo de computo. Esto es necesario porque la librería que ejecuta musket utiliza I/O mediante archivos de sistemas de ficheros basados es POSIX, mientras que para poder distribuir y poder trabajar con ellas, correctamente, en Hadoop tienen que estar en el sistema de ficheros distribuidos.\\
+Finalmente en la etapa cleanup se cierra el buffer de escritura del printWriter y se efectua la llamada al código nativo de musket, pasandole por parámetro el string que conforma los argumentos necesarios que previamente se había generado generado en el método parse de la clase CLIParse. Finalmente eliminan los archivos locales que se utilizaron para la ejecución de musket y se suben la salida del programa a HDFS para que simplemente se tenga que hacer un merge de la salida de todas las ejecuciones de los nodos.
 
 %\begin{figure}[htbp]
 %	\centerline{\includegraphics[width=20cm,height=5cm]{figures/hmusket.png}}
@@ -205,17 +199,18 @@ Los distintos mappers que se manejan en esta aplicación durante la fase de setu
 %\end{figure}
 
 \subsection{Creación e integración de la librería}
-Para poder realizar la llamada a código nativo lo primero de todo es convertir el software musket en una shared library para posteriormente instalarla en el clúster hadoop y que  de esta manera cualquier programa del ecosistema hadoop puede hacer uso de la misma.\\
-Para llevar a cabo esta tarea lo primero de todo es crear una clase en el proyecto Java, en este caso fue en la clase MusketCaller, donde se especifique que durante la fase de instanciación cargue la librería nativa, en el caso del presente proyecto la librería ``musket'', además de esta indicación se tiene que crear un método con la etiqueta ``native'', que al igual que en los métodos abstractos tan solo se debe especificar la firma.\\
-A continuación utilizando el comando ``javac'' se compila dicha generando un fichero .class, este fichero es requerido para generar el header file (.h), por medio del comando ``javah'' para posteriormente darle una implementación en un programa C.\\
-Finalmente se tiene que desarrollar un programa en C o C++ donde se incluya el header file generado en el paso anterior y la librería de JNI, darle implementación a la función indicada en el header file y finalmente realizar la llamada de musket.\\
-Para poder realizar una llamada a musket como si fuera una librería en vez de un binario se tiene que modificar el makefile del software en cuestión para añadir los parámetros ``-fPIC'' y ``-shared'' para la creación de esta librería. Una vez creada la librería se tiene que añadir al directorio \$HADOOP\_HOME/lib/native y por último declarar la función main dentro del programa C que implemente el header generado.
+Para poder realizar la llamada a código nativo lo primero de todo es convertir el software musket en una shared library para posteriormente instalarla en el cluster Hadoop y que de esta manera cualquier aplicación del ecosistema pueda hacer uso de la misma.\\
+Para llevar a cabo esta tarea lo primero de todo es crear una clase en el proyecto Java, en este caso fue en la clase MusketCaller, donde se especifique que durante la fase de instanciación cargue la librería nativa, en el caso del presente proyecto la librería ``musket''. Además de esta indicación se tiene que crear un método con la etiqueta ``native'', al igual que en los métodos abstractos tan solo se debe especificar la firma.\\
+A continuación utilizando el comando ``javac'' se compila dicha clase generando un fichero .class, este fichero es requerido para generar el header file (.h), por medio del comando ``javah'' para posteriormente darle una implementación.\\
+Para darle implementación a ese header file se tiene que desarrollar un programa en C o C++ donde se incluya el header file generado en el paso anterior y la librería de JNI, darle implementación a la firma indicada en el fichero de cabeceras y finalmente realizar la llamada de musket.\\
+Para poder realizar una llamada a musket como si fuera una librería en vez de un binario se tiene que modificar el makefile del software en cuestión para añadir al compilador, en este caso el g++, los parámetros ``-fPIC'' y ``-shared''. Una vez creada la librería se tiene que añadir al directorio \$HADOOP\_HOME/lib/native y por último declarar la función main dentro del programa C que implemente el header generado.
 
 \section{Evaluación experimental}
-A lo largo de esta sección se detallará el entorno, tanto software como hardware, donde se realización de las pruebas, los distintos experimentos llevados a cabo y una serie de comentarios acerca de los resultados obtenidos.
+En primer lugar se detallará el entorno, tanto software como hardware, donde se realización de las pruebas para que se puedan replicar los estudios y experimentos que se detallan a lo largo de esta sección. A continuación se indicara el estudio que se realizó sobre Musket para conocer la horquilla de tiempos a mejorar, los posibles cuellos de botella, etc.\\
+Para concluir se expondrán los experimentos y los resultados de los mismos que se efectuaron sobre el sobre HMusket.
 
 \subsection{Entorno de pruebas}
-Para la realización de las diversas pruebas expuestas en los siguientes párrafos se utilizó el clúster Plutón del departamento de ingeniería de computadores el cual consta con 18 nodos de cómputo de la siguientes características: 
+Para la realización de las diversas pruebas expuestas en los siguientes párrafos se utilizó el clúster Plutón del Departamento de Ingeniería de Computadores el cual consta con 18 nodos de cómputo de la siguientes características:\\ 
 
 \begin{itemize}
 	\item \textbf{CPU Model}: 2 × Intel Xeon E5-2660 Sandy Bridge-EP
@@ -226,19 +221,41 @@ Para la realización de las diversas pruebas expuestas en los siguientes párraf
 	\item \textbf{Cache L1/L2/L3}: 32 KB/256 KB/20 MB
 	\item \textbf{Memoria RAM}: 64 GB DDR3 1600 Mhz
 	\item \textbf{Discos}: 1 × HDD 1 TB SATA3 7.2K rpm y 1 × SSD 480 GB SATA3 (de los nodos 8 a 15)
-	\item \textbf{Redes}: InfiniBand FDR y Gigabit Ethernet
+	\item \textbf{Redes}: InfiniBand FDR y Gigabit Ethernet\\
 \end{itemize}
 
-En resumen, el clúster cuenta con 1 nodo de login y 18 nodos de cómputo con un total de 288 cores físicos (576 threads), 1.152 TB de memoria.\\
+En resumen, el clúster cuenta con 1 nodo de login y 18 nodos de cómputo con un total de 288 cores físicos (576 threads) y 1.152 TB de memoria.\\
 
-El sistema operativo que se ejecuta en esta máquina es Rocks 6.1 una distribución para entornos cluster basada en CentOS 6.
+El sistema operativo que se ejecuta en estos servidores es Rocks 6.1 una distribución para entornos cluster basada en CentOS 6.
+
+\subsection{Análisis Musket}
+Dado que Musket es un software acelerado mediante OpenMP (memoria compartida) el número máximo de threads con los que se pudo evaluar en el cluster Plutón fueron 16, y teniendo en cuenta que requiere por lo menos 2 threads para funcionar (debido a patrón maestro/esclavo) se decidió evaluar el rendimiento de la aplicación con dos dataset, uno con formato single-end de 49995929 secuencias de tamaño 100, y otro con formato pair-end (es decir, dos datasets) de 69247248 secuencias de tamaño 101 cada una. Todo esto generando un espectro para k-mers de tamaño 2.\\
+
+Tal y como se puede apreciar en la tabla 1 la paralelización de Musket presenta un carácter lineal pudiendo alcanzar un speed-up de aproximadamente 4.6977 para el dataset single-end y 8.6465 para el dataset pair-end. Resulta cuanto menos curioso que siendo el dataset pair-end el doble de grande lo procese a en menos tiempo, esto puede ser debido al [...]
+
+\begin{table}[]
+	\centering
+	\caption{Tabla experimental de Musket}
+	\label{tabla 1}
+	\begin{tabular}{|l|l|l|l|l|}
+		\hline
+		Dataset 	& Threads 	& Number of sequence & Sequence size & Time 				\\ \hline
+		Single-end 	& 2			& 49995929           & 100           & 13h: 29min: 21sec 	\\ \hline
+		Single-end 	& 4			& 49995929           & 100           & 08h: 44min: 17sec	\\ \hline
+		Single-end 	& 8			& 49995929           & 100           & 04h: 44min: 12sec 	\\ \hline
+		Single-end 	& 16		& 49995929           & 100           & 02h: 52min: 17sec 	\\ \hline \hline
+		Pair-end 	& 2			& 69247248           & 101           & 13h: 30min: 02sec 	\\ \hline
+		Pair-end 	& 4			& 69247248           & 101           & 04h: 30min: 15sec	\\ \hline
+		Pair-end 	& 8			& 69247248           & 101           & 02h: 24min: 34sec 	\\ \hline
+		Pair-end 	& 16		& 69247248           & 101           & 01h: 33min: 41sec 	\\ \hline
+	\end{tabular}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% TODO %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Análisis Musket}
-
 \subsection{Análisis HMusket}
+Para realizar las pruebas de HMusket a [...]
 
 \section{Conclusiones y trabajo futuro}
 
