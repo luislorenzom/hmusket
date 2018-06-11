@@ -239,7 +239,7 @@ Tal y como se puede apreciar en la tabla 1 la paralelización de Musket presenta
 	\label{tabla 1}
 	\begin{tabular}{|l|l|l|l|l|}
 		\hline
-		Dataset 	& Threads 	& Number of sequence & Sequence size & Time 				\\ \hline
+		\textbf{Dataset} 	& \textbf{Threads} 	& \textbf{Number of sequence} & \textbf{Sequence size} & \textbf{Time} 				\\ \hline
 		Single-end 	& 2			& 49995929           & 100           & 13h: 29min: 21sec 	\\ \hline
 		Single-end 	& 4			& 49995929           & 100           & 08h: 44min: 17sec	\\ \hline
 		Single-end 	& 8			& 49995929           & 100           & 04h: 44min: 12sec 	\\ \hline
@@ -251,13 +251,32 @@ Tal y como se puede apreciar en la tabla 1 la paralelización de Musket presenta
 	\end{tabular}
 \end{table}
 
+\subsection{Análisis HMusket}
+Para realizar las pruebas de HMusket se estudiaron las que posibles combinaciones de nodos/mapper que podían ser más eficientes a la hora de efectuar los cálculos. Debido a que cada nodo se compone de 2 procesadores, de 8 núcleos cada uno, se estableció como máxima repartir en cada nodo a lo sumo 1 mapper por cada procesador, es decir, 1 o 2 mappers por cada nodo de computo. Esto implico que se tuvo que ajustar la memoria y el heap de los mappers (50Gb en caso de 1 mapper y 25 en caso de 2 mappers por nodo y en ambos casos se establece el 80\% para el heap) por lo tanto las combinaciones que se decidieron realizar para el experimento son los que se muestran en la tabla 2 junto con los resultados obtenidos en las diferentes pruebas.\\
+
+Para la realización de pruebas en el cluster se utilizo BDEv, por medio de esta herramienta se puede desplegar un cluster Hadoop con toda una variedad de características y auto-configurado simplemente teniendo una versión de JDK en el entorno. Además de todo esto, BDEv provee de estadísticas e informes de evaluación acerca de como fue el rendimiento de la aplicación. No obstante el principal motivo para utilizar esta herramienta fue para poder lanzar aplicaciones Hadoop en un sistema de colas del cluster, ya que de por si solo, el cluster no cuenta con el entorno Hadoop para los usuarios y no hay actualmente una solución para la integración de estas aplicaciones distribuidas para los sistemas de colas.\\
+
+\begin{table}[]
+	\centering
+	\caption{Tabla experimental de HMusket}
+	\label{tabla 1}
+	\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+		\hline
+		\textbf{Dataset} &	\textbf{Number of nodes} & \textbf{Mapper/Node} & \textbf{Threads/Node} & \textbf{Memory/Mapper} & \textbf{Number of sequenc}e & \textbf{Sequence size} & \textbf{Time} & \textbf{Output merge time}	\\ \hline
+		Single-end &	4 & 1 & 16 & Memory/Mapper & Number of sequence & Sequence size & Time	& Output merge time	\\ \hline
+		Single-end &	4 & 2 & 8 & Memory/Mapper & Number of sequence & Sequence size & Time	& Output merge time	\\ \hline
+		Single-end &	8 & 1 & 16 & Memory/Mapper & Number of sequence & Sequence size & Time	& Output merge time	\\ \hline
+		Single-end &	8 & 2 & 8 & Memory/Mapper & Number of sequence & Sequence size & Time	& Output merge time	\\ \hline
+	\end{tabular}
+\end{table}
+
+Dados los resultados obtenidos en los experimentos realizados on HMusket se puede concluir que [...]
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% TODO %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Análisis HMusket}
-Para realizar las pruebas de HMusket a [...]
-
 \section{Conclusiones y trabajo futuro}
+[...]
 
 \section*{Referencias bibliográficas}
 
