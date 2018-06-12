@@ -55,6 +55,14 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 
 		// Retrieve the arguments from the configuration
 		String arguments = context.getConfiguration().get("arguments");
+		
+	    // Change the argument placeholder by a mix of timestamp and task attemp id
+        String timestamp = String.valueOf((System.currentTimeMillis()));
+        String taskAttempId = String.valueOf(context.getTaskAttemptID().getTaskID().getId());
+        
+        String uniqueId = timestamp + "-" + taskAttempId;
+        
+        arguments.replace("${placeholder}", uniqueId);
 
 		// Native call to musket
 		new MusketCaller().callMusket(arguments);
@@ -66,13 +74,16 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 		// Upload the musket ouput to hdfs
 		FileSystem hdfs = FileSystem.get(context.getConfiguration());
 
-		Path src0 = new Path(context.getConfiguration().get("fileOut") + ".0");
-		Path src1 = new Path(context.getConfiguration().get("fileOut") + ".1");
+		Path src0 = new Path(context.getConfiguration().get("fileOut").replace("${placeholder}", uniqueId) + ".0");
+		Path src1 = new Path(context.getConfiguration().get("fileOut").replace("${placeholder}", uniqueId) + ".1");
 		
 		Path dst0 = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-"
 				+ String.valueOf((System.currentTimeMillis())) + ".0");
 		Path dst1 = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-"
 		        + String.valueOf((System.currentTimeMillis())) + ".1");
+		
+		hdfs.create(dst0);
+		hdfs.create(dst1);
 
 		hdfs.copyFromLocalFile(src0, dst0);
 		hdfs.copyFromLocalFile(src1, dst1);

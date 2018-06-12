@@ -109,8 +109,7 @@ public class CLIParser {
 							valueAssociate += "/";
 						}
 						HMusket.folderOut = valueAssociate + "HMusket/";
-						HMusket.fileOut = /* HMusket.folderOut + */ "/scratch/output-musket-"
-								+ String.valueOf((System.currentTimeMillis()));
+						HMusket.fileOut = valueAssociate + "musket/output-musket-${placeholder}";
 						arguments += " -o " + HMusket.fileOut;
 					}
 				}
