@@ -109,7 +109,7 @@ public class CLIParser {
 							valueAssociate += "/";
 						}
 						HMusket.folderOut = valueAssociate + "HMusket/";
-						HMusket.fileOut = valueAssociate + "musket/output-musket-${placeholder}";
+						HMusket.fileOut = valueAssociate + "/output-musket-${placeholder}";
 						arguments += " -o " + HMusket.fileOut;
 					}
 				}
@@ -233,7 +233,7 @@ public class CLIParser {
 			fileName += ".fastq";
 		}
 
-		// Concats and returns it
+		// Joins path and filename and returns it
 		return localPath + fileName;
 	}
 }

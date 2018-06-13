@@ -52,7 +52,7 @@ public class HMusket extends Configured implements Tool {
 
 		if (pairEnd) {
 			// Adds the inputs file in the job configuration for pair-end
-			// dataset
+			// DataSet
 			conf.set("localSequenceDataset_left", HMusket.localLeftCopyPath);
 			conf.set("localSequenceDataset_right", HMusket.localRightCopyPath);
 		}
@@ -89,7 +89,7 @@ public class HMusket extends Configured implements Tool {
 
 		// Sets input format class
 		if (pairEnd) {
-			// Sets input format class for paired end dataset
+			// Sets input format class for paired end DataSet
 			job.setInputFormatClass(PairedEndSequenceInputFormat.class);
 
 			// Sets the input path and also the input format class
@@ -99,7 +99,7 @@ public class HMusket extends Configured implements Tool {
 			// Sets Mapper
 			job.setMapperClass(HMusketPairEndMapper.class);
 		} else {
-			// Sets input format class for single end dataset
+			// Sets input format class for single end DataSet
 			job.setInputFormatClass(inputFormatClass);
 
 			// Sets input path

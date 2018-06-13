@@ -40,29 +40,31 @@ public class HMusketSingleEndMapper extends Mapper<LongWritable, Text, Text, Int
 
 		// Retrieve the arguments from the configuration
 		String arguments = context.getConfiguration().get("arguments");
-		
-		// Change the argument placeholder by a mix of timestamp and task attemp id
+
+		// Change the argument placeholder by a mix of TimeStamp and task
+		// attempt
+		// id
 		String timestamp = String.valueOf((System.currentTimeMillis()));
 		String taskAttempId = String.valueOf(context.getTaskAttemptID().getTaskID().getId());
-		
+
 		String uniqueId = timestamp + "-" + taskAttempId;
-		
-		arguments.replace("${placeholder}", uniqueId);
+
+		arguments = arguments.replace("${placeholder}", uniqueId);
 
 		// Native call to musket
 		new MusketCaller().callMusket(arguments);
-		
+
 		// Delete file
 		new File(context.getConfiguration().get("localSequenceDataset"), "UTF-8").delete();
-		
-		// Upload the musket ouput to hdfs
+
+		// Upload the musket output to HDFS
 		FileSystem hdfs = FileSystem.get(context.getConfiguration());
-		
+
 		Path src = new Path(context.getConfiguration().get("fileOut").replace("${placeholder}", uniqueId));
 		Path dst = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-" + uniqueId);
-		
+
 		hdfs.create(dst);
-		
+
 		hdfs.copyFromLocalFile(src, dst);
 	}
 }

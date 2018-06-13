@@ -29,16 +29,16 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 	@Override
 	protected void map(LongWritable key, Text value, Mapper<LongWritable, Text, Text, IntWritable>.Context context)
 			throws IOException, InterruptedException {
-	    	    
-		// Converts and saves the edge between both datasets
+
+		// Converts and saves the edge between both DataSets
 		Integer k = Integer.parseInt(key.toString());
-		
-		// Gets the different datasets
+
+		// Gets the different DataSets
 		byte[] valueAsStringArray = value.copyBytes();
 		byte[] leftValue = Arrays.copyOfRange(valueAsStringArray, 0, k);
 		byte[] rightValue = Arrays.copyOfRange(valueAsStringArray, k, valueAsStringArray.length);
 
-		// Prints both datasets
+		// Prints both DataSets
 		this.leftWriter.println(new String(leftValue));
 		this.rightWriter.println(new String(rightValue));
 	}
@@ -55,14 +55,15 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 
 		// Retrieve the arguments from the configuration
 		String arguments = context.getConfiguration().get("arguments");
-		
-	    // Change the argument placeholder by a mix of timestamp and task attemp id
-        String timestamp = String.valueOf((System.currentTimeMillis()));
-        String taskAttempId = String.valueOf(context.getTaskAttemptID().getTaskID().getId());
-        
-        String uniqueId = timestamp + "-" + taskAttempId;
-        
-        arguments.replace("${placeholder}", uniqueId);
+
+		// Change the argument placeholder by a mix of TimeStamp and task
+		// attempt id
+		String timestamp = String.valueOf((System.currentTimeMillis()));
+		String taskAttempId = String.valueOf(context.getTaskAttemptID().getTaskID().getId());
+
+		String uniqueId = timestamp + "-" + taskAttempId;
+
+		arguments = arguments.replace("${placeholder}", uniqueId);
 
 		// Native call to musket
 		new MusketCaller().callMusket(arguments);
@@ -71,17 +72,17 @@ public class HMusketPairEndMapper extends Mapper<LongWritable, Text, Text, IntWr
 		new File(context.getConfiguration().get("localSequenceDataset_left"), "UTF-8").delete();
 		new File(context.getConfiguration().get("localSequenceDataset_right"), "UTF-8").delete();
 
-		// Upload the musket ouput to hdfs
+		// Upload the musket output to HDFS
 		FileSystem hdfs = FileSystem.get(context.getConfiguration());
 
 		Path src0 = new Path(context.getConfiguration().get("fileOut").replace("${placeholder}", uniqueId) + ".0");
 		Path src1 = new Path(context.getConfiguration().get("fileOut").replace("${placeholder}", uniqueId) + ".1");
-		
+
 		Path dst0 = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-"
 				+ String.valueOf((System.currentTimeMillis())) + ".0");
 		Path dst1 = new Path(context.getConfiguration().get("folderOut") + "HMusket-output-"
-		        + String.valueOf((System.currentTimeMillis())) + ".1");
-		
+				+ String.valueOf((System.currentTimeMillis())) + ".1");
+
 		hdfs.create(dst0);
 		hdfs.create(dst1);
 
