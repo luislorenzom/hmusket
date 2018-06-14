@@ -29,3 +29,8 @@ hs_err_pid*
 *.log
 *.pdf
 *.synctex.gz
+*.bbl
+*.blg
+
+# C file
+core

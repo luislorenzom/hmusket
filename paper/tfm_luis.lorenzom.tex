@@ -74,7 +74,7 @@ luis.lorenzom@udc.es}
 \begin{abstract}
 La alta demanda del análisis de datos genéticos durante la última década ha incrementado la necesidad de software que pueda procesar todo este volumen da datos en tiempos razonables.\\
 Una de fases requeridas durante estos análisis es la corrección de secuencias, ya que durante la amplificación de las muestras a secuenciar se pueden introducir errores debido a fallos del ADN Polimerasa.\\
-A lo largo de este proyecto se presenta HMusket, una herramienta paralela para sistemas memoria distribuida implementada con Hadoop siguiendo el modelo MapReduce, que logra reducir los tiempos de corrección de grandes volúmenes de datos. Pudiendo llegar a acelerar la corrección de ADN con un speed-up de 85.6455 frente a una versión análoga de memoria compartida. Esta herramienta esta disponible en https://github.com/luislorenzom/hmusket
+A lo largo de este proyecto se presenta HMusket, una herramienta paralela para sistemas de memoria distribuida implementada con Hadoop y siguiendo el modelo MapReduce, que logra reducir los tiempos de corrección de grandes volúmenes de datos, pudiendo procesar datos del orden de varios Terabytes, siento considera este volumen de datos como Big Data. Llegando a incrementar la corrección de secuencias con una aceleración de 20.7 frente a una versión análoga de memoria compartida. Además de la herramienta se presenta un análisis de las distintas soluciones disponibles actualmente. Esta herramienta esta disponible en https://github.com/luislorenzom/hmusket
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -206,7 +206,7 @@ La nula referencia a las clases reduce, tal y como se puede apreciar en la figur
  * Method:    callMusket
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_es_udc_gac_hmusket_MusketCaller_call (JNIEnv *, jobject, jstring);
+JNIEXPORT void JNICALL Java_es_udc_gac_hmusket_MusketCaller_callMusket (JNIEnv *, jobject, jstring);
 \end{lstlisting}
 
 \begin{figure*}
@@ -261,7 +261,6 @@ Tal y como se puede apreciar en el cuadro \ref{musket_experiment_result} la para
 
 \begin{table}[t]
 	\centering
-	\label{musket_experiment_result}
 	\begin{tabular}{|l|l|p{1.5cm}|p{1.3cm}|l|}
 		\hline
 		\textbf{Dataset} 	& \textbf{Threads} 	& \textbf{Número de secuencias} & \textbf{Tamaño secuencias} & \textbf{Tiempo}	\\ \hline
@@ -275,14 +274,11 @@ Tal y como se puede apreciar en el cuadro \ref{musket_experiment_result} la para
 		Pair-end 	& 16		& 69247248           & 101           & 01h: 33min: 41sec 	\\ \hline
 	\end{tabular}
 	\caption{Tabla experimental de Musket}
+	\label{musket_experiment_result}
 \end{table}
 
-\subsection{Análisis HMusket}
-Para realizar las pruebas de HMusket se estudiaron y valoraron las posibles combinaciones de mapper por nodos que podían ser más eficientes a la hora de efectuar las funciones. Debido a que cada nodo se compone de 2 procesadores de 8 núcleos cada uno, se estableció como máxima repartir en cada nodo a lo sumo 1 mapper por cada procesador, es decir, 1 o 2 mappers por cada nodo de computo. Esto implico, que se tenga que ajustar la memoria y el heap de los mappers (50Gb en caso de 1 mapper y 25Gb en caso de 2 mappers por nodo y en ambos casos se establece el 80\% de la memoria para el heap) por lo tanto, las combinaciones que se decidieron realizar para el experimento son los que se muestran en el cuadro \ref{hmusket_experiment_result} junto con los resultados obtenidos en las diferentes pruebas.\\
-
 \begin{table*}[]
-	\label{hmusket_experiment_result}
-	\begin{tabular}{|p{1.3cm}|p{1cm}|l|l|l|p{1.5cm}|p{1.5cm}|p{2.2cm}|p{2.2cm}|}
+	\begin{tabular}{|p{1.3cm}|p{1cm}|l|l|l|p{1.5cm}|p{1.3cm}|p{2.2cm}|p{2.2cm}|}
 		\hline
 		\textbf{Dataset} &	\textbf{Número de nodos} & \textbf{Mapper/Nodo} & \textbf{Threads/Nodo} & \textbf{Memoria/Mapper} & \textbf{Número de secuencias} & \textbf{Tamaño secuencias} & \textbf{Tiempo} & \textbf{Tiempo del merge}	\\ \hline
 		Single-end &	4 & 1 & 16 & 50 GB & 49995929 & 100 & 0 h: 25 min: 34 seg	& 2 min: 05.514 seg	\\ \hline
@@ -290,20 +286,28 @@ Para realizar las pruebas de HMusket se estudiaron y valoraron las posibles comb
 		Single-end &	8 & 1 & 16 & 50 GB & 49995929 & 100 & 0 h: 13 min: 39 seg	& 2 min: 07.445 seg	\\ \hline
 		Single-end &	8 & 2 & 8 & 25 GB & 49995929 & 100 & 0 h: 08 min: 18 seg	& 1 min: 34.217 seg	\\ \hline \hline
 		Pair-end &	4 & 1 & 16 & 50 GB & 69247248 & 101 & 0 h: 42 min: 06 seg	& 5 min: 22.472 seg	\\ \hline
-		Pair-end &	4 & 2 & 8 & 25 GB & 69247248 & 101 & xxxxxxxxxxxxxxxxx	& xxxxxxxxxxxxxxxxx	\\ \hline
+		Pair-end &	4 & 2 & 8 & 25 GB & 69247248 & 101 & 0 h: 30 min: 50 seg	& 6 min : 22.166 seg	\\ \hline
 		Pair-end &	8 & 1 & 16 & 50 GB & 69247248 & 101 & 0 h: 23 min: 37 seg	& 5 min: 18.541 seg	\\ \hline
-		Pair-end &	8 & 2 & 8 & 25 GB & 69247248 & 101 & xxxxxxxxxxxxxxxxx	& xxxxxxxxxxxxxxxxx \\ \hline
+		Pair-end &	8 & 2 & 8 & 25 GB & 69247248 & 101 & 0h: 16 min: 22 seg	& 5 min: 25.067 seg \\ \hline
 	\end{tabular}
 	\caption{Tabla experimental de HMusket}
+	\label{hmusket_experiment_result}
 \end{table*}
 
-Dados los resultados obtenidos en los experimentos realizados on HMusket se puede concluir que el procesamiento que realiza esta herramienta sobre los conjuntos de datos de entrada escala de una manera linear, y que es mucho más eficiente repartir los 16 cores de un nodo entre dos mappers, de esta manera que se paraleliza mucho más el trabajo.\\
+\subsection{Análisis HMusket}
+Para realizar las pruebas de HMusket se estudiaron y valoraron las posibles combinaciones de mapper por nodos que podían ser más eficientes a la hora de efectuar las funciones. Debido a que cada nodo se compone de 2 procesadores de 8 núcleos cada uno, se estableció como máxima repartir en cada nodo a lo sumo 1 mapper por cada procesador, es decir, 1 o 2 mappers por cada nodo de computo. Esto implico, que se tenga que ajustar la memoria y el heap de los mappers (50Gb en caso de 1 mapper y 25Gb en caso de 2 mappers por nodo y en ambos casos se establece el 80\% de la memoria para el heap) por lo tanto, las combinaciones que se decidieron realizar para el experimento son los que se muestran en el cuadro \ref{hmusket_experiment_result} junto con los resultados obtenidos en las diferentes pruebas.\\
+
+Durante la realización de los experimentos se tuvieron que efectuar 5 ensayos distintos para cada prueba. El motivo de esto fue evitar la obtención de datos inexactos. Ya que como se mencionó en apartados anteriores, Hadoop es un framework desarrollado en java, y como todo software implementado con esta tecnología el acceso a los recursos proporcionados por la máquina virtual puede introducir ruido en la toma de tiempos (e.g. retardos en el acceso a discos u reserva de memoria). Para la elección del tiempo a introducir en este articulo se realizó una mediana de los 5 valores obtenidos. Se procedió de igual manera para la obtención de los tiempos para realizar la unión de todos los ficheros de salida.\\
+
+Dados los resultados obtenidos en los experimentos realizados con HMusket se puede concluir que el procesamiento que realiza esta herramienta sobre los conjuntos de datos de entrada escala de una manera linear. Obteniendo una aceleración de 20.7 en el procesamiento de los datos en formato single-end. A su vez, para la corrección de los datos en formato pair-end se obtiene un speed-up de 5.7. En ambos casos se utiliza la configuración de 8 nodos ejecutando 2 mapper cada nodo, teniendo que de esta manera dividir la memoria asignada al computador entre 2, recordemos que cada nodo de computo dispone 60 Gb de memoria RAM, de la cual en esta configuración se asignan 25 Gb a cada nodo. Resulta interesante destacar las diferencias entre el uso 2 nodos frente a 1 nodo, justificando de esta manera que el uso de dos nodos por mappers es la configuración óptima. Por ejemplo, en el experimento donde se procesa el conjunto de datos en formato single-end con 4 nodos. En el caso de procesar esta información con 1 solo mapper por nodo se obtienen 25 minutos con 34 segundos. Por contra si se procesa esta información con 2 mappers por nodo se logra reducir este tiempo a  9 minutos y 50 segundos. Es decir, con este cambio de configuración se obtienen una aceleración de 2.6.\\
+
+Respecto a los tiempos obtenidos en la fase del merge de las salidas, se puede apreciar que apenas hay una gran variabilidad entre las distintas configuraciones. No obstante cabe destacar, como es lógico, que a mayor número de mappers se incrementa el tiempo de merge. Pese a esto, hay que recordar que hablamos de conjuntos de datos del orden de 16 Gb (en el caso del single-end) y 44 Gb (22 Gb cada fichero en el caso del modo pair-end) y penalización es del orden de medio minuto.
 
 \section{Conclusiones y trabajo futuro}
 Teniendo en cuenta todo lo indicando a lo largo de este artículo se puede concluir con que Musket es una herramienta bastante potente, de hecho de las mejores que hay actualmente, pero nos es capaz de hacer frente a la alta demanda de datos que ha surgido a lo largo de los últimos años.\\
-Una buena alternativa para este problema es implementar o reutilizar ese software en un entorno de memoria distribuida, como por ejemplo Hadoop, mediante el paradigma MapReduce. Además, si se realiza una configuración adecuada se puede se puede mejorar el rendimiento de la aplicación en un x\%, Tal y como hace HMusket.\\
+Una buena alternativa para este problema es implementar o reutilizar ese software en un entorno de memoria distribuida, como por ejemplo Hadoop, mediante el paradigma MapReduce, tal y como hace HMusket. De esta manera se pueden evitar cuellos de botella y preprocesados de datos al inicio del análisis, obteniendo aceleraciones de hasta 20.7 además de lograr una escalabilidad lineal en base al número de nodos y mappers utilizados. Cabe destacar que el uso de dos mappers por nodo, en las condiciones experimentales ya indicadas en el cuadro \ref{node_especification}, implica una aceleración de hasta 2.6 pese a penalizar esta mejora a la fase de unión de todos los archivos de salida con aproximadamente 30 segundos más.\\ 
 
-Como trabajo futuro sería interesante realizar ciertas modificaciones tanto la librería Musket como en la aplicación Hadoop para evitar las comunicaciones usando la entrada y salida estándar en lugar de ficheros y comparar el rendimiento de esta segunda versión frente a la aquí expuesta.\\
+Como trabajo futuro sería interesante realizar ciertas modificaciones tanto la librería Musket como en la aplicación Hadoop para evitar las comunicaciones usando la entrada y salida estándar en lugar de ficheros y comparar el rendimiento de esta segunda versión frente a la aquí expuesta. Además, otro estudio que podría ser de gran interés sería analizar como escala el tiempo de merge a medida que aumenta el tamaño del conjunto de datos de entrada y por consiguiente el número de mappers que utiliza la aplicación.\\
 
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Referencias bibliográficas
