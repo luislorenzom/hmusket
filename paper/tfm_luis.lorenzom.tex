@@ -13,6 +13,7 @@
 \usepackage{color}
 \usepackage{caption}
 \usepackage{float}
+\usepackage{multirow}
 
 % A few listings color definition
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -192,20 +193,20 @@ La implementación de dichas clases Map y Reduce siguen el siguiente ciclo de vi
 
 \subsection{Desarrollo de HMusket}
 HMusket sigue la estructura indicada en el aparatado anterior. En el driver se recogen los parámetros de entrada que se reciben al lanzar la aplicación (e.g. ruta al fichero de entrada Fasta/Fastq). Posteriormente, se invoca al método parse de la clase CLIParse (véase figura \ref{class_diagram}) el cual evalúa la obligatoriedad de dichos parámetros, configura parte del driver y genera una cadena que conforma los argumentos que recibirá la librería de Musket para ejecutar el algoritmo de corrección de secuencias.\\
-Una vez configurado el driver, se establecen los ficheros de entrada y salida de los mappers: tanto el que procesa los dataset single-end como el de los pair-end, dependiendo del caso. Para ello se hace uso de las clases InputFormat[*] que proporciona la librería HSP. Esto es necesario para que Hadoop sepa que tipo de información está procesando cada mapper. Es decir, establecer si las secuencias de entrada que esta recibiendo son de tipo Fasta, donde se procesa una cadena para la secuencia bases y otra para el identificador, o Fastq, que a mayores de la cadena de ADN y el identificador, proporciona la opción de añadir un comentario y una segunda cadena que informa de la calidad de las bases. De esta manera cada mapper recibe un parte proporcional del dataset, evitando así que, por ejemplo, un mapper reciba de entrada secuencias o cadenas de calidad desparejadas, cualquier tipo de pre-procesado del dataset y cuellos de botella. El único requerimiento para que este método funcione es subir previamente el dataset a HDFS algo inherente al uso de cualquier aplicación Hadoop.\\
+Una vez configurado el driver, se establecen los ficheros de entrada y salida de los mappers: tanto el que procesa los conjuntos de datos single-end como el de los paired-end, dependiendo del caso. Para ello se hace uso de las implementaciones de las clases InputFormat de Hadoop[*] que proporciona la librería HSP. Esto es necesario para que Hadoop sepa que tipo de información está procesando cada función Map. Es decir, establecer si las secuencias de entrada que esta recibiendo son de tipo Fasta, donde se procesa una cadena para la secuencia bases y otra para el identificador, o Fastq, que a mayores de la cadena de ADN y el identificador, proporciona la opción de añadir un comentario y una segunda cadena que informa de la calidad de las bases. De esta manera cada mapper recibe un parte proporcional del conjunto de datos de entrada, evitando así que, por ejemplo, un mapper reciba de entrada secuencias o cadenas de calidad desparejadas, tener que cualquier tipo de pre-procesado del conjunto de datos de entrada al inicio de la aplicación y como consecuencia de esto generar cuellos de botella. El único requerimiento para que este método funcione es subir previamente el dataset a HDFS algo inherente al uso de cualquier aplicación Hadoop.\\
 
-Los distintos mappers que se manejan en HMusket instancian durante la fase setup un PrintWriter[*] para cada dataset que manejan (si es modo single-end solo trabaja con uno, mientras que el mapper de los datasets en formato pair-end utiliza dos). Posteriormente, en la etapa map, se escribe toda la información de entrada al disco duro local del nodo de cómputo. Esto es necesario porque la librería que ejecuta Musket utiliza I/O mediante sistemas de ficheros basados es POSIX, mientras que para poder distribuir y poder trabajar adecuadamente con Hadoop se tiene que utilizar el sistema de ficheros distribuidos HDFS.\\
-Finalmente en la etapa cleanup se cierra el buffer de escritura del/o los PrintWriter y se efectúa la llamada al código nativo de Musket, pasándole por parámetro el string que conforma los argumentos necesarios, generado previamente en la clase CLIParse. Tras la ejecución nativa de Musket, se eliminan los archivos locales que se utilizaron para la entrada de Musket y se copian las salidas a HDFS. Finalmente se hace un merge de todas las salida de cada mapper para obtener un único fichero de salida.\\
+Las distintas clases Map que se incluyen en HMusket instancian durante la fase setup un objeto de tipo PrintWriter[*]: uno en el caso de conjuntos single-end y dos apra los conjuntos paired-end. Posteriormente, en la etapa Map, se escribe toda la información de entrada al disco duro local del nodo de cómputo. Esto es necesario porque la librería que ejecuta Musket utiliza I/O mediante sistemas de ficheros basados es POSIX, mientras que para poder distribuir y poder trabajar adecuadamente con Hadoop se tiene que utilizar el sistema de ficheros HDFS.\\
+Finalmente en la etapa cleanup se cierra el buffer de escritura de los objetos PrintWriter y se efectúa la llamada al código nativo de Musket, pasándole por parámetro la cadena que conforma los argumentos necesarios, generado previamente en la clase CLIParse. Tras la ejecución de Musket, se eliminan los archivos locales que se utilizaron para su entrada se copian sus salidas a HDFS. Finalmente se hace un merge de todas las salidas de cada mapper para obtener un único fichero con la salida final.\\
 
-La nula referencia a las clases reduce, tal y como se puede apreciar en la figura \ref{class_diagram} y en los párrafos superiores, es debido a que para el diseño de HMusket no es considero necesario una etapa reduce, ya que solo interesa dividir el conjunto de datos y aplicar la función corregir de Musket.
+La nula referencia a clases reduce, tal y como se puede apreciar en la Figura \ref{class_diagram} y en los párrafos anteriores, es debido a que para el diseño de HMusket no es necesario una etapa Reduce, ya que solo interesa dividir el conjunto de datos y aplicar la función corregir de Musket.
 
 \begin{lstlisting}[style=CStyle, caption=Cabecera JNI generada]
 /*
  * Class:     es_udc_gac_hmusket_MusketCaller
- * Method:    callMusket
+ * Method:    call
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_es_udc_gac_hmusket_MusketCaller_callMusket (JNIEnv *, jobject, jstring);
+JNIEXPORT void JNICALL Java_es_udc_gac_hmusket_MusketCaller_call (JNIEnv *, jobject, jstring);
 \end{lstlisting}
 
 \begin{figure*}
@@ -215,18 +216,18 @@ JNIEXPORT void JNICALL Java_es_udc_gac_hmusket_MusketCaller_callMusket (JNIEnv *
 \end{figure*}
 
 \subsection{Creación e integración de la librería}
-Para poder realizar la llamada a código nativo es necesario convertir el software Musket en una librería compartida[*]. Posteriormente esa librería debe set instalarla en el cluster Hadoop para que cualquier aplicación del ecosistema pueda hacer uso de la misma.\\
-Para efectuar esta tarea hay que crear una clase dentro del proyecto Java, en este caso fue la clase MusketCaller, donde se especifique que durante la fase de instanciación cargue la librería nativa. Además de esta indicación se tiene que crear un método con la etiqueta ``native'', al igual que en los métodos abstractos tan solo se debe especificar la firma.\\
-A continuación utilizando el comando ``javac'' se compila dicha clase generando un fichero .class, este fichero es requerido para generar el fichero de cabeceras (.h), por medio del comando ``javah'' para posteriormente darle una implementación.\\
-Dicha implementación debe ser incluida en un fichero C o C++ donde implemente la firma indicada en el fichero de cabeceras y por último realizar la llamada a la aplicación Musket.\\
-Para poder realizar esta llamada como si fuera una librería en vez de un binario, se requiere una única modificación en el makefile de Musket para añadir a los flags del compilador necesarios para crear una librería compartida (``-fPIC'' y ``-shared''). Una vez compilada se añade al directorio \$HADOOP\_HOME/lib/native y por último se declarara la función main, del proyecto Musket, dentro del código C desarrollado.
+Para poder realizar la llamada a código nativo desde java es necesario convertir la herramienta Musket en una librería compartida[*] para su uso desde JNI. Posteriormente esa librería debe ser instalada en el clúster Hadoop para que cualquier aplicación del ecosistema pueda hacer uso de la misma.\\
+Para efectuar esta tarea hay que crear una clase dentro del proyecto HMusket, en este caso fue la clase MusketCaller, donde se especifique que durante la fase de instanciación cargue la librería nativa. Además de esta indicación se tiene que crear un método con la etiqueta ``native'', que al igual que en los métodos abstractos tan solo se debe especificar la firma.\\
+A continuación utilizando el comando ``javac'' proporcionado por el entorno de desarrollo de Java, se compila dicha clase generando un fichero .class. Este fichero es requerido para generar el fichero de cabeceras (.h) por medio del comando ``javah'' para posteriormente darle una implementación.\\
+Dicha implementación debe ser incluida en un fichero C o C++ donde se implemente la firma indicada en el fichero de cabeceras y por último realizar la llamada a la aplicación Musket.\\
+Para poder realizar esta llamada como si fuera una librería en vez de un binario, se requiere una única modificación en el Makefile de Musket para añadir los flags del compilador que son necesarios para crear una librería compartida (``-fPIC'' y ``-shared''). Una vez compilada, la librería se añade al directorio \$HADOOP\_HOME/lib/native y por último se declarara la función main, del proyecto Musket, dentro del código C desarrollado en HMusket.
 
 \section{Evaluación experimental}
-En primer lugar se detallará el entorno, tanto software como hardware, donde se realización las pruebas para maximizar la reproducibilidad de los experimentos que se muestran a lo largo de esta sección. Posteriormente se indicara el estudio realizado sobre Musket para conocer la horquilla de tiempos a mejorar y los posibles cuellos de botella.\\
+En primer lugar se detallará el entorno, tanto software como hardware, donde se realizaron las pruebas para maximizar la reproducibilidad de los experimentos que se muestran a lo largo de esta sección. Posteriormente se analizará el rendimiento de Musket para conocer la horquilla de tiempos susceptibles de ser mejorados por HMusket.\\
 Para concluir, se expondrán los experimentos, resultados y conclusiones acerca de HMusket.
 
 \subsection{Entorno de pruebas}
-Para la realización de las diversas pruebas expuestas a lo largo de los siguientes párrafos se utilizó la cabina 0 del cluster Plutón del Departamento de Ingeniería de Computadores, el cual consta con 18 nodos de cómputo con características se muestran en la tabla \ref{node_especification}:\\ 
+Para la realización de las diversas pruebas expuestas a lo largo de los siguientes párrafos se utilizó la cabina 0 del cluster Plutón[*] del Departamento de Ingeniería de Computadores de la Universidad de la Coruña. Dicha cabina consta de 18 nodos de cómputo con las características se muestran en la Tabla \ref{node_especification}\\ 
 
 \begin{table}[t]
 	\begin{center}
@@ -236,65 +237,67 @@ Para la realización de las diversas pruebas expuestas a lo largo de los siguien
 			\textbf{Velocidad/Turbo CPU} & 2.20 GHz/3 GHz \\ \hline
 			\textbf{Cores por CPU} & 8 \\ \hline
 			\textbf{Threads por core} & 2 \\ \hline
-			\textbf{Cores/Threads por nodo} & 16/32 \\ \hline
+			\textbf{Cores físicos/virtuales} & 16/32 \\ \hline
 			\textbf{Cache L1/L2/L3} & 32 KB/256 KB/20 MB \\ \hline
 			\textbf{Memoria RAM} & 64 GB DDR3 1600 Mhz \\ \hline
-			\textbf{Discos} & 1 × HDD 1 TB SATA3 7.2K \\ \hline
+			\textbf{Discos} & 1 × HDD 1 TB SATA3 7.2K rpm\\ \hline
 			\textbf{Redes} & InfiniBand FDR y Gigabit Ethernet \\ \hline
 		\end{tabular}
-		\caption{Especificaciones de un nodo de computo}
+		\caption{Especificaciones de un nodo de cómputo}
 		\label{node_especification}
 	\end{center}
 \end{table}
 
-En resumen, el cluster cuenta con 1 nodo de login y 18 nodos de cómputo con un total de 288 cores físicos (576 threads) y 1.152 TB de memoria. El sistema operativo que se ejecuta en estos servidores es Rocks 6.1[*] una distribución para entornos cluster basada en CentOS[*] 6.9, mientras que el kernel utilizado es 2.6.32.x. La maquina virtual de java utlizada ha sido OracleJDK 1.7.0\_80. Por último Musket ha sido compilado usando la suite de GNU en su versión 6.3.1.\\
+En resumen, la cabina cuenta con 18 nodos de cómputo con un total de 288 cores físicos (576 threads) y 1.152 TB de memoria. El sistema operativo que se ejecuta en estos servidores es Rocks 6.1[*], una distribución para entornos cluster basada en CentOS[*] 6.9, mientras que el kernel utilizado es 2.6.32-696.23.1.el6.x86\_64. La maquina virtual de Java utlizada ha sido OracleJDK 1.7.0\_80. Por último, Musket ha sido compilado usando la suite de GNU en su versión 6.3.1.\\
 
-Para la realización de pruebas en el cluster se utilizo la versión 3.1 de BDEv[*], por medio de esta herramienta se puede desplegar un cluster Hadoop con todo su ecosistema de aplicaciones, pudiéndolo configurar de manera sencilla, simplemente hace falta tener una versión del JRE[*] en el entorno. Además de todo esto, BDEv provee de estadísticas e informes de evaluación acerca de como fue el rendimiento de la aplicación durante la ejecución. No obstante, el principal motivo para utilizar esta herramienta fue para poder ejecutar la aplicación distribuida en el sistema de colas del cluster, ya que de por si solo, el cluster no cuenta con el entorno Hadoop para los usuarios y actualmente no hay una solución unificada para la integración este tipo de frameworks en los sistemas de colas.\\
+Para la realización de pruebas en el clúster Pluton se utilizo la versión 3.1 de BDEv[*]. Por medio de esta herramienta se puede desplegar un cluster Hadoop con todo su ecosistema de aplicaciones, pudiéndolo configurar de manera sencilla, simplemente con tener una versión del JRE[*] configurado en el entorno. Además de todo esto, BDEv provee de estadísticas e informes de evaluación acerca de como fue el rendimiento de la aplicación durante la ejecución. No obstante, el principal motivo para utilizar esta herramienta fue para poder ejecutar la aplicación distribuida en el sistema de colas del clúster, ya que actualmente no hay una solución unificada para la correcta integración este tipo de frameworks Big Data en dichos sistemas de colas.\\
 
-Durante el análisis de Musket y HMusket se utilizaron dos dataset, uno con formato single-end de 49995929 secuencias de tamaño 100, y otro con formato pair-end (es decir, dos ficheros) de 69247248 secuencias (cada uno) de tamaño 101 cada una, ambos de tipo Fastq y todo esto generando un espectro para k-mers de tamaño 2.\\
+Durante el análisis de Musket y HMusket se utilizaron dos conjuntos de datos genéticos de tipos Fastq que están disponibles públicamente: SRR921889 y SRR948355. El primero tiene formato single-end y consta de unas 50 millones de secuencias de 100 bases cada una. El segundo es un conjunto de datos paired-end (es decir, dos ficheros) con 69 millones de secuencias (cada uno) de 101 bases.
+
 
 \subsection{Análisis Musket}
-Dado que Musket es un software acelerado mediante OpenMP (memoria compartida) el número máximo de threads con los que se pudo evaluar en el cluster fueron 16, y teniendo en cuenta que se requieren por lo menos 2 threads para funcionar (debido a patrón maestro/esclavo) se decidió evaluar el rendimiento de la aplicación con hilos de 2 a 16 en potencias de 2, es decir: 2, 4, 8, 16.\\
+Dado que Musket es un software acelerado mediante OpenMP (memoria compartida) el número máximo de threads con los que se pudo evaluar en el cluster fueron 16, y teniendo en cuenta que se requieren por lo menos 2 threads para funcionar debido a patrón maestro/esclavo se decidió evaluar el rendimiento de la aplicación con un número de hilos en potencias de 2, es decir: 2, 4, 8, 16.\\
 
-Tal y como se puede apreciar en la tabla \ref{musket_experiment_result} la paralelización de Musket presenta un carácter lineal pudiendo alcanzar una aceleración de aproximadamente 4.6 para el dataset single-end y 8.6 para el dataset pair-end. Resulta curioso, que siendo el dataset pair-end el doble de grande lo procese a en menos tiempo, esto puede ser debido a los k-mers que conforman el espectro del segundo dataset (pair-end) son menores y por lo tanto se repiten más que en el primer dataset, por tanto la evaluación de los mismos se efectúa de una manera más rápida. Respecto a las aceleraciones obtenidas en el proceso experimental, se puede concluir que Musket escala al aumentar el número de cores.
+Tal y como se puede apreciar en la Tabla \ref{musket_experiment_result}, la paralelización de Musket puede alcanzar una aceleración de aproximadamente 4.6 para el conjunto single-end y 8.6 para el paired-end. Resulta curioso que siendo el segundo conjunto más grande lo procese a en menos tiempo. Esto puede ser debido que a los k-mers que conforman el espectro del conjunto paired-end son menores y por lo tanto se repiten más que en el primero, por tanto la evaluación de los mismos se efectúa de una manera más rápida. Respecto a las aceleraciones obtenidas en el proceso experimental, se puede concluir que Musket escala razonablemente al aumentar el número de cores.
 
 \begin{table}[t]
 	\centering
-	\begin{tabular}{|l|l|p{1.5cm}|p{1.3cm}|l|}
+	\begin{tabular}{|l|c|l|}
 		\hline
-		\textbf{Dataset} 	& \textbf{Threads} 	& \textbf{Número de secuencias} & \textbf{Tamaño secuencias} & \textbf{Tiempo}	\\ \hline
-		Single-end 	& 2			& 49995929           & 100           & 13h: 29min: 21sec 	\\ \hline
-		Single-end 	& 4			& 49995929           & 100           & 08h: 44min: 17sec	\\ \hline
-		Single-end 	& 8			& 49995929           & 100           & 04h: 44min: 12sec 	\\ \hline
-		Single-end 	& 16		& 49995929           & 100           & 02h: 52min: 17sec 	\\ \hline \hline
-		Pair-end 	& 2			& 69247248           & 101           & 13h: 30min: 02sec 	\\ \hline
-		Pair-end 	& 4			& 69247248           & 101           & 04h: 30min: 15sec	\\ \hline
-		Pair-end 	& 8			& 69247248           & 101           & 02h: 24min: 34sec 	\\ \hline
-		Pair-end 	& 16		& 69247248           & 101           & 01h: 33min: 41sec 	\\ \hline
+		\textbf{Dataset} 				& \textbf{Threads} 		& \textbf{Tiempo (minutos)} \\ \hline
+		\multirow{ 4}{*}{SRR921889} 	& 2			    		& 809.35 	\\ \cline{2-3}
+							 			& 4		          		& 524.28	\\ \cline{2-3}
+							 			& 8		          		& 284.20 	\\ \cline{2-3}
+							 			& 16	           		& 172.28 	\\ \hline \hline
+		\multirow{ 4}{*}{SRR948355} 	& 2		         		& 810.03	\\ \cline{2-3}
+				 						& 4			           	& 270.25	\\ \cline{2-3}
+				 						& 8			          	& 144.56 	\\ \cline{2-3}
+				 						& 16	          		& 93.68 	\\ \hline
 	\end{tabular}
-	\caption{Tabla experimental de Musket}
+	\caption{Resultados experimentales de Musket}
 	\label{musket_experiment_result}
 \end{table}
 
 \begin{table*}[]
-	\begin{tabular}{|p{1.3cm}|p{1cm}|l|l|l|p{1.5cm}|p{1.3cm}|p{2.2cm}|p{2.2cm}|}
+	\begin{tabular}{|l|c|c|c|c|l|l|}
 		\hline
-		\textbf{Dataset} &	\textbf{Número de nodos} & \textbf{Mapper/Nodo} & \textbf{Threads/Nodo} & \textbf{Memoria/Mapper} & \textbf{Número de secuencias} & \textbf{Tamaño secuencias} & \textbf{Tiempo} & \textbf{Tiempo del merge}	\\ \hline
-		Single-end &	4 & 1 & 16 & 50 GB & 49995929 & 100 & 0 h: 25 min: 34 seg	& 2 min: 05.514 seg	\\ \hline
-		Single-end &	4 & 2 & 8 & 25 GB & 49995929 & 100 & 0 h: 09 min: 50 seg	& 1 min: 22.847 seg	\\ \hline
-		Single-end &	8 & 1 & 16 & 50 GB & 49995929 & 100 & 0 h: 13 min: 39 seg	& 2 min: 07.445 seg	\\ \hline
-		Single-end &	8 & 2 & 8 & 25 GB & 49995929 & 100 & 0 h: 08 min: 18 seg	& 1 min: 34.217 seg	\\ \hline \hline
-		Pair-end &	4 & 1 & 16 & 50 GB & 69247248 & 101 & 0 h: 42 min: 06 seg	& 5 min: 22.472 seg	\\ \hline
-		Pair-end &	4 & 2 & 8 & 25 GB & 69247248 & 101 & 0 h: 30 min: 50 seg	& 6 min : 22.166 seg	\\ \hline
-		Pair-end &	8 & 1 & 16 & 50 GB & 69247248 & 101 & 0 h: 23 min: 37 seg	& 5 min: 18.541 seg	\\ \hline
-		Pair-end &	8 & 2 & 8 & 25 GB & 69247248 & 101 & 0h: 16 min: 22 seg	& 5 min: 25.067 seg \\ \hline
+		\textbf{Dataset} &	\textbf{Número de nodos} & \textbf{Mapper/Nodo} & \textbf{Threads/Nodo} & \textbf{Memoria/Mapper} & \textbf{Tiempo (minutos)} & \textbf{Tiempo del merge}	\\ \hline
+		\multirow{ 4}{*}{SRR921889} &	4 & 1 & 16 & 50 GB & 25.56	& 2 min: 05.514 seg	\\ \cline{2-7}
+									&	4 & 2 & 8 & 25 GB  & 9.83	& 1 min: 22.847 seg	\\ \cline{2-7}
+									&	8 & 1 & 16 & 50 GB & 13.65	& 2 min: 07.445 seg	\\ \cline{2-7}
+									&	8 & 2 & 8 & 25 GB  & 8.30	& 1 min: 34.217 seg	\\ \hline \hline
+									
+		\multirow{ 4}{*}{SRR948355} &	4 & 1 & 16 & 50 GB & 42.10	& 5 min: 22.472 seg	\\ \cline{2-7}
+									&	4 & 2 & 8 & 25 GB  & 30.83	& 6 min : 22.166 seg	\\ \cline{2-7}
+									&	8 & 1 & 16 & 50 GB & 23.61	& 5 min: 18.541 seg	\\ \cline{2-7}
+									&	8 & 2 & 8 & 25 GB  & 16.36	& 5 min: 25.067 seg \\ \hline
 	\end{tabular}
-	\caption{Tabla experimental de HMusket}
+	\caption{Resultados experimentales de HMusket}
 	\label{hmusket_experiment_result}
 \end{table*}
 
 \subsection{Análisis HMusket}
-Para realizar las pruebas de HMusket se estudiaron y valoraron las posibles combinaciones de mapper por nodos que podían ser más eficientes a la hora de efectuar las funciones. Debido a que cada nodo se compone de 2 procesadores de 8 núcleos cada uno, se estableció como máxima repartir en cada nodo a lo sumo 1 mapper por cada procesador, es decir, 1 o 2 mappers por cada nodo de computo. Esto implico, que se tenga que ajustar la memoria y el heap de los mappers (50Gb en caso de 1 mapper y 25Gb en caso de 2 mappers por nodo y en ambos casos se establece el 80\% de la memoria para el heap) por lo tanto, las combinaciones que se decidieron realizar para el experimento son los que se muestran en la tabla \ref{hmusket_experiment_result} junto con los resultados obtenidos en las diferentes pruebas.\\
+Para realizar las pruebas de HMusket se estudiaron y valoraron las posibles combinaciones de tareas Map a ejecutar por nodo que podían ser más eficientes. Debido a que cada nodo se compone de 2 procesadores de 8 núcleos cada uno, se estableció como máxima repartir en cada nodo a lo sumo 1 mapper por cada procesador, es decir, 1 o 2 mappers por cada nodo de computo. Esto implica que se tenga que ajustar la memoria y el heap de los mappers: 50 Gb en caso de 1 mapper y 25 Gb en caso de 2 mappers por nodo, y en ambos casos se establece el 80\% de la memoria para el tamaño del heap. Por lo tanto, las combinaciones que se decidieron evaluar en los experimentos son los que se muestran en la Tabla \ref{hmusket_experiment_result} junto con los resultados obtenidos.\\
 
 Durante la realización de los experimentos se tuvieron que efectuar 5 ensayos distintos para cada prueba. El motivo de esto fue evitar la obtención de datos inexactos. Ya que como se mencionó en apartados anteriores, Hadoop es un framework desarrollado en java, y como todo software implementado con esta tecnología el acceso a los recursos proporcionados por la máquina virtual puede introducir ruido en la toma de tiempos (e.g. retardos en el acceso a discos u reserva de memoria). Para la elección del tiempo a introducir en este articulo se realizó una mediana de los 5 valores obtenidos. Se procedió de igual manera para la obtención de los tiempos para realizar la unión de todos los ficheros de salida.\\
 
