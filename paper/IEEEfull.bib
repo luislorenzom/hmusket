@@ -18,16 +18,6 @@
 	pages = "308-315",
 }
 
-@article{fastq,
-	author = "Peter J. A. Cock, Christopher J. Fields, Naohisa Goto and Michael L. Heuer and Peter M. Rice",
-	title = {The Sanger FASTQ file format for sequences with quality scores, and the Solexa/Illumina FASTQ variants},
-	journal = "Nucleic Acids Res",
-	volume = "38",
-	number = "6",
-	year = "2010",
-	pages = "1767–1771",
-}
-
 @misc{hadoop,
 	author = "{The Apache software foundation [Internet]}",
 	title = "{Apache Hadoop}",
@@ -37,7 +27,7 @@
 
 @misc{hsp,
 	author = "Roberto Rey Expósito and Luis Lorenzo Mosquera and Jorge González-Domínguez",
-	title = "{HSP (Hadoop Sequence Parser)}",
+	title = "{Hadoop Sequence Parser (HSP) library}",
 	year = "2018 [cited 12 June 2018]",
 	url = "https://github.com/rreye/hsp"
 }
@@ -73,8 +63,8 @@
 
 @inproceedings{cloudrs,
 	author={C. C. Chen and Y. J. Chang and W. C. Chung and D. T. Lee and J. M. Ho},
-	booktitle="2013 IEEE International Conference on Big Data",
-	title={CloudRS: An error correction algorithm of high-throughput sequencing data based on scalable framework},
+	booktitle="Proceeding of the IEEE International Conference on Big Data, Santa Clara, CA, USA",
+	title="{CloudRS: An error correction algorithm of high-throughput sequencing data based on scalable framework}",
 	year="2013",
 	pages="717-722",
 }
@@ -121,23 +111,6 @@
 	Pages="105--122",
 }
 
-@article{farmacogenetica,
-	Author="Pirmohamed, M.",
-	Title="{{P}harmacogenetics and pharmacogenomics}",
-	Journal="Br J Clin Pharmacol",
-	Year="2001",
-	Volume="52",
-	Number="4",
-	Pages="345--347",
-}
-
-@misc{cuda-ec,
-	author = "{Aman Mangal, Chirag Jain}",
-	title = "{Error correction in high-throughput short-read data on GPU (Mid-Term Progress)}",
-	year = "2014 [cited 17 June 2018]",
-	url = "https://github.com/mangalaman93/cude-ec/blob/master/Mid_Report.pdf"
-}
-
 @article{reptile,
 	Author="Medvedev, P.  and Scott, E.  and Kakaradov, B.  and Pevzner, P. ",
 	Title="{{E}rror correction of high-throughput sequencing datasets with non-uniform coverage}",
@@ -150,9 +123,16 @@
 
 @misc{openmp,
 	author = "{OpenMP Architecture Review Board}",
-	title = "{{OpenMP} Application Program Interface Version 3.0}",
+	title = "{{OpenMP} Application Program Interface Version 4.0}",
 	year = "2013 [cited 17 June 2018]",
 	url = "https://www.openmp.org/wp-content/uploads/OpenMP4.0.0.pdf"
+}
+
+@misc{cuda-ec,
+	author = "{Aman Mangal, Chirag Jain}",
+	title = "{Error correction in high-throughput short-read data on GPU (Mid-Term Progress)}",
+	year = "2014 [cited 17 June 2018]",
+	url = "https://github.com/mangalaman93/cude-ec"
 }
 
 @misc{bdev,
@@ -162,15 +142,6 @@
 	url = "http://bdev.des.udc.es/"
 }
 
-@article{de_brujin,
-	Author="Chikhi, R.  and Limasset, A.  and Medvedev, P.",
-	Title="{{C}ompacting de {B}ruijn graphs from sequencing data quickly and in low memory}",
-	Journal="Bioinformatics",
-	Year="2016",
-	Volume="32",
-	Number="12",
-	Pages="201-i208",
-}
 
 @misc{soap_corrector,
 	title = "{SOAP - Short Oligonucleotide Analysis Package}",
@@ -179,7 +150,7 @@
 }
 
 @misc{pluton,
-	title = "{pluton cluster's main page}",
+	title = "{Pluton cluster's main page}",
 	year = "2013 [cited 17 June 2018]",
 	url = "http://pluton.des.udc.es/"
 }
@@ -194,27 +165,6 @@
 	Pages="131--136",
 }
 
-@article{burrows-wheeler,
-	Author="Li, H.  and Durbin, R. ",
-	Title="{{F}ast and accurate short read alignment with {B}urrows-{W}heeler transform}",
-	Journal="Bioinformatics",
-	Year="2009",
-	Volume="25",
-	Number="14",
-	Pages="1754--1760",
-}
-
-@article{fm-index,
-	Author="Huang, Y. T.  and Huang, Y. W. ",
-	Title="{{A}n efficient error correction algorithm using {F}{M}-index}",
-	Journal="BMC Bioinformatics",
-	Year="2017",
-	Volume="18",
-	Number="1",
-	Pages="524",
-	Month="Nov"
-}
-
 @article{sga,
 	Author="Sameith, K.  and Roscito, J. G.  and Hiller, M. ",
 	Title="{{I}terative error correction of long sequencing reads maximizes accuracy and improves contig assembly}",
@@ -226,11 +176,52 @@
 	Month="01"
 }
 
-@misc{"{CentOS}",
+@misc{centos,
 	Author="{The CentOS Project}",
 	Title="{CentOS}",
 	Year="2004 [cited 17 June 2018]",
 	url = "https://www.centos.org/"
 }
+
+@article{quake,
+	Author="Kelley, D. R.  and Schatz, M. C.  and Salzberg, S. L. ",
+	Title="{{Q}uake: quality-aware detection and correction of sequencing errors}",
+	Journal="Genome Biol.",
+	Year="2010",
+	Volume="11",
+	Number="11",
+	Pages="116 - 129"
+}
+
+@article{hammer,
+	Author="Medvedev, P.  and Scott, E.  and Kakaradov, B.  and Pevzner, P. ",
+	Title="{{E}rror correction of high-throughput sequencing datasets with non-uniform coverage}",
+	Journal="Bioinformatics",
+	Year="2011",
+	Volume="27",
+	Number="13",
+	Pages="137--141",
+}
+
+@article{hitec,
+	Author="Ilie, L.  and Fazayeli, F.  and Ilie, S. ",
+	Title="{{H}i{T}{E}{C}: accurate error correction in high-throughput sequencing data}",
+	Journal="Bioinformatics",
+	Year="2011",
+	Volume="27",
+	Number="3",
+	Pages="295--302",
+}
+
+@article{sherec,
+	Author="Schroder, J.  and Schroder, H.  and Puglisi, S. J.  and Sinha, R.  and Schmidt, B. ",
+	Title="{{S}{H}{R}{E}{C}: a short-read error correction method}",
+	Journal="Bioinformatics",
+	Year="2009",
+	Volume="25",
+	Number="17",
+	Pages="2157--2163",
+}
+
 
 
